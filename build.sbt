@@ -6,14 +6,13 @@ enablePlugins(JavaServerAppPackaging)
 configs(IntegrationTest)
 Defaults.itSettings
 
+version in ThisBuild ~= (_.replace('+', '-'))
+
 lazy val root = (project in file("."))
   .configs(IntegrationTest)
   .settings(
     name := "akka-kubernetes",
     Defaults.itSettings,
-
-    // TODO use dynver
-    version := "1.3.3.7",
 
     libraryDependencies ++= ServiceDeps,
 
@@ -35,7 +34,11 @@ lazy val root = (project in file("."))
     dockerUsername := Some("chbatey"),
     dockerUpdateLatest := true,
 
-    javaOptions in IntegrationTest ++= collection.JavaConversions.propertiesAsScalaMap(System.getProperties)
-      .collect { case (key, value) if key.startsWith("akka") => "-D" + key + "=" + value }.toSeq
+    javaOptions in IntegrationTest ++= collection.JavaConverters.propertiesAsScalaMap(System.getProperties)
+      .collect { case (key, value) if key.startsWith("akka") => "-D" + key + "=" + value }.toSeq,
+
+
   )
+
+
 

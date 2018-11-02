@@ -5,6 +5,7 @@ metadata:
     app: akka-kubernetes
   name: akka-kubernetes
   namespace: akka-kubernetes
+  version: VERSION
 spec:
   replicas: 3
   selector:
