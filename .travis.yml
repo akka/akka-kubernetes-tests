@@ -1,45 +1,50 @@
 sudo: required
 dist: xenial
 language: scala
-
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 before_install:
-  - curl -sL https://raw.githubusercontent.com/shyiko/jabba/0.10.1/install.sh | bash && . ~/.jabba/jabba.sh
-
+- curl -sL https://raw.githubusercontent.com/shyiko/jabba/0.10.1/install.sh | bash
+  && . ~/.jabba/jabba.sh
 install:
-  - $JABBA_HOME/bin/jabba install $TRAVIS_JDK && export JAVA_HOME="$JABBA_HOME/jdk/$TRAVIS_JDK" && export PATH="$JAVA_HOME/bin:$PATH" && java -Xmx32m -version
-
+- $JABBA_HOME/bin/jabba install $TRAVIS_JDK && export JAVA_HOME="$JABBA_HOME/jdk/$TRAVIS_JDK"
+  && export PATH="$JAVA_HOME/bin:$PATH" && java -Xmx32m -version
 before_cache:
-  - find $HOME/.ivy2 -name "ivydata-*.properties" -print -delete
-  - find $HOME/.sbt  -name "*.lock"               -print -delete
-
+- find $HOME/.ivy2 -name "ivydata-*.properties" -print -delete
+- find $HOME/.sbt  -name "*.lock"               -print -delete
 cache:
   directories:
-    - $HOME/.ivy2/cache
-    - $HOME/.sbt/boot
-    - $HOME/.jabba/jdk
-
+  - "$HOME/.ivy2/cache"
+  - "$HOME/.sbt/boot"
+  - "$HOME/.jabba/jdk"
 before_script:
-  - unset _JAVA_OPTIONS
-
+- unset _JAVA_OPTIONS
 jobs:
   include:
   - stage: test
     script:
     - sbt -J-XX:ReservedCodeCacheSize=128m test
     env: TEST
-  - script: sbt -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes.centralpark.lightbend.com"   it:test
+  - script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - curl https://github.com/openshift/origin/releases/download/v3.10.0/openshift-origin-client-tools-v3.10.0-dd10d17-linux-64bit.tar.gz | tar xzv && chmod +x oc && sudo cp oc /usr/local/bin/ && rm oc
+    - oc login https://centralpark.lightbend.com --token=$OC_TOKEN
+    - oc status
+    - oc project akka-kubernetes
+    - version=`sbt -Dsbt.log.noformat=true docker:publish version | tail -n 1 | awk '{ print $NF }'`; echo $version; cat ./kubernetes/akka-cluster.yml | sed s/latest/$version/g | kubectl apply -f -
+    - sbt docker:publish -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes.centralpark.lightbend.com" it:test
     env: INT_TEST
-
 stages:
-  - name: check
-    if: NOT tag =~ ^v
-  - name: test
-    if: NOT tag =~ ^v
-
+- name: check
+  if: NOT tag =~ ^v
+- name: test
+  if: NOT tag =~ ^v
 env:
   global:
-    - TRAVIS_JDK=1.8.192
-    - JABBA_HOME=/home/travis/.jabba
+  - TRAVIS_JDK=1.8.192
+  - JABBA_HOME=/home/travis/.jabba
+  - secure: cSrSMOzMvcaDUp686CcP4tG2qPMlGeaVcsBzjN3ERRF8bzC0IWGNGE4xQ6bksF15EwWMOWhn/dlEpA5segPiFuWAV5CCrXNoHlVRJo2VmOrhMVsv8WaA786VLfqabe2dAL5x+ihZLLEBW2R+WGxlEX+RtRDl3iXvpfDbMCUqLSfLi9BLLyvhAQTFYjQLPc36g/rINXWbnCZOyaWtEfSE99zeYxQuAUg+621unnJukSTEkQMMG4+3AHu4ZwMk/Zit7TDkoi02UPCYZ85fr1uszLMpXt9sDc+b4loisUfws2eoHNL6z9R+jEahU412g1Fxn7R/7gG3u5at7cqfFHzerM2/mDLAcwQUdY76lqzZqT7MjI/4Ssy086qYv45ChkasmU/Lxbfk4NhlgbFUdcwRYikghj7oYrsZHvEm/fRZYHmzTRzrH4RWNFBetGaFiycS8F8paabTcee/euIZ8wHXafTRdl7MsG1nQRJ9Oa6egmgv8YzrmyQvTJqAiLt6ZA5NhFWs8IdqHt6Co1l3n7QmpExtkYOhm98UTuHY2lsA05dIOaE83w0TNYmYaqqK0D+LiLhJHX+8s2rVh79kSblz1fbmVqXlb0t2sljffxMbVcHtTTA5AzZhamMAZv35rg8/RvQqYaf5TXFMktzaAw7odoAwYgTun/nYQIU83oFX8LU=
+  - secure: 0Ln/anHivt4fBpE5RI3zKI8oPdH7h9b65iXsf6Ao6vcM+htzo0plUS8lQmU9RedbtpgD7mNb6nGxFNHDrWjzgRJnueb7+Bzp7AmhXAr6tw4hn+8KO2JyEDK8EIOgbPTyqi42y1yK4mjZwUuOhlNzlObRbenDREHLBx8XJpHiDqq7Sh5j84pWSVYpxB1qe/ug5RwZ1ABIOcXhjzsmYYVVKnGO2UJ3lL1ClRJKoJKADNcqkUq77j38RCHq8X4nWsmmh7uk8mt8U0nPcECTfrdlFvrXzg/FM46FYTJ1329igaF1zVGlaNbzL5UKxhZHuXGXC74I+gD9vk7Y8Tvc1o6bhOl+VHZNLZl6pZSU5b5MRFXhuHTHS/9SYiiPburQOuuT41dT2tdue07+XFK/FzKED+GTek/XptZbXmabAXVFQeNxU+5BWPQltKLMFNv5r839ac5ScJu8zhS2OomR9S+2RGn3jViWWQLCXzdvFdogEueNmGmWiRaxHD1TzqsaLBkHK+4G/1C0dKia2X0FrXwqIKHyssX5J65nFKKIVmhCJgHE2GiWJvnGWLqVyaXnAdOafP0ftKOODBAc8geroIGIbHTmQSsMBN0rKuJ5euACFcneU2Z9PIujXBUqYRQYleVOia2RLhGoqUEtC1DvQJDa2hZ1SIHH9FwT9jqX0dygy8A=
+  - secure: a2ZWThs3SnCGRbCc81oeZiCgSGcrWkriLu0nYqYgn8/lHuLe3oC4Zgo567sWP0NZSyK4Bw+0qcWlvSoXEybwUqxGaKNZrp38pd71rfan81uhnilQ+g0MA6FERMv0ao9PFhQ3kQQskgv6CpU/f180eWjBaqkYdr9Xh+hCFXy9jJ4ntF5YGj160UUTFX8IGvBlceQSWkulF+q//BIDdEmJKxxlL/o5Qhffhzp9EojHfsKRTWHftTbsFzzLXFeoj3k1mmBNkiPHCc6dl/MFlJ9Je33Tu64Jz+k1jvSDo5mKdi6qg18h/8TelYslfy+84AEwvx+9feg/3iS8oOFSyBm7BD6Qx2kKSVjLhFtlTzsBjRYZd2pXuBISvxvy+qQhImuCrJzdWHzhQWwdusWLv8rWp89hlbAzneT6AjfBItdpblsO87Qaff0sJfw9fBuoMvLbLSsmdVMLZwb2bboa/BuXA+SWbrRCWGcp/3dqZmI7yyOa/g7RxrG4h7Nymr6nqrmi4cYuBjdpZjNx4/BaFF1Du5S0veMvTZILw8nSNR4aWGIHN4Puvy5Q+wFRD2uwp5maUmaVyvC0xpH6NszvMu6WHNaRk4JX+qRE66s7VhEuprb4qLBcNYNUpQJEDvWqmW8e0FmYz7/7y6cTewB6LJwu9DSPRk8OiIQ9MvUiUBQOH5w=
+services:
+- docker

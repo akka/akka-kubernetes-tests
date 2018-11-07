@@ -31,7 +31,7 @@ lazy val root = (project in file("."))
       Cmd("RUN", "chgrp -R 0 . && chmod -R g=u .")
     ),
 
-    dockerUsername := Some("chbatey"),
+    dockerUsername := Some("kubakka"),
     dockerUpdateLatest := true,
 
     javaOptions in IntegrationTest ++= collection.JavaConverters.propertiesAsScalaMap(System.getProperties)

@@ -5,7 +5,6 @@ metadata:
     app: akka-kubernetes
   name: akka-kubernetes
   namespace: akka-kubernetes
-  version: VERSION
 spec:
   replicas: 3
   selector:
@@ -24,7 +23,7 @@ spec:
     spec:
       containers:
       - name: akka-kubernetes
-        image: chbatey/akka-kubernetes:latest
+        image: kubakka/akka-kubernetes:latest
         livenessProbe:
           tcpSocket:
             port: 8558
