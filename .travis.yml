@@ -30,7 +30,7 @@ jobs:
     script:
     - sbt -J-XX:ReservedCodeCacheSize=128m test
     env: TEST
-  - script: sbt -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="https://akka-kubernetes.centralpark.lightbend.com"   it:test
+  - script: sbt -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes.centralpark.lightbend.com"   it:test
     env: INT_TEST
 
 stages:
