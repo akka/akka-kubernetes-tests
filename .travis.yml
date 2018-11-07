@@ -24,16 +24,13 @@ jobs:
   - stage: test
     script:
     - sbt -J-XX:ReservedCodeCacheSize=128m test
-    env: TEST
-  - script:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - curl -L https://github.com/openshift/origin/releases/download/v3.10.0/openshift-origin-client-tools-v3.10.0-dd10d17-linux-64bit.tar.gz --strip 1 | tar xvz && chmod +x oc && sudo cp oc /usr/local/bin/ && rm oc
+    - curl -L https://github.com/openshift/origin/releases/download/v3.10.0/openshift-origin-client-tools-v3.10.0-dd10d17-linux-64bit.tar.gz | tar xvz --strip 1 && chmod +x oc && sudo cp oc /usr/local/bin/ && rm oc
     - oc login https://centralpark.lightbend.com --token=$OC_TOKEN
     - oc status
     - oc project akka-kubernetes
-    - version=`sbt -Dsbt.log.noformat=true docker:publish version | tail -n 1 | awk '{ print $NF }'`; echo $version; cat ./kubernetes/akka-cluster.yml | sed s/latest/$version/g | kubectl apply -f -
-    - sbt docker:publish -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes.centralpark.lightbend.com" it:test
-    env: INT_TEST
+    - version=`sbt -Dsbt.log.noformat=true docker:publish version | tail -n 1 | awk '{ print $NF }'`; echo $version; cat ./kubernetes/akka-cluster.yml | sed s/latest/$version/g | oc apply -f -
+    - sbt -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes.centralpark.lightbend.com" it:test
 stages:
 - name: check
   if: NOT tag =~ ^v
