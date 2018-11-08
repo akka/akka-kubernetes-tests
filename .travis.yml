@@ -24,18 +24,21 @@ jobs:
   - stage: test
     script:
     - sbt -J-XX:ReservedCodeCacheSize=128m test
+  - stage: int-test
+    script:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
     - curl -L https://github.com/openshift/origin/releases/download/v3.10.0/openshift-origin-client-tools-v3.10.0-dd10d17-linux-64bit.tar.gz | tar xvz --strip 1 && chmod +x oc && sudo cp oc /usr/local/bin/ && rm oc
     - oc login https://centralpark.lightbend.com --token=$OC_TOKEN
     - oc status
     - oc project akka-kubernetes
-    - version=`sbt -Dsbt.log.noformat=true docker:publish version | tail -n 1 | awk '{ print $NF }'`; echo $version; cat ./kubernetes/akka-cluster.yml | sed s/latest/$version/g | oc apply -f -
-    - sbt -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes.centralpark.lightbend.com" it:test
+    - export VERSION=`sbt -Dsbt.log.noformat=true docker:publish version | tail -n 1 | awk '{ print $NF }'`; echo $version; cat ./kubernetes/akka-cluster.yml | sed s/latest/$VERSION/g | oc apply -f -
+    - echo "Deployed: $VERSION"
+    - sbt -Dakka.deployed-version=$VERSION -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes.centralpark.lightbend.com" it:test
 stages:
-- name: check
-  if: NOT tag =~ ^v
 - name: test
   if: NOT tag =~ ^v
+- name: int-test
+  if: repo = akka/akka-kubernetes-tests
 env:
   global:
   - TRAVIS_JDK=1.8.192

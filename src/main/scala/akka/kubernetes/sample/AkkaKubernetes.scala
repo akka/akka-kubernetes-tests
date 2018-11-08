@@ -16,7 +16,7 @@ import akka.stream.ActorMaterializer
 
 object DemoApp extends App {
 
-  implicit val system = ActorSystem("Kubernetessample")
+  implicit val system = ActorSystem("KubernetesTest")
 
   import system.{dispatcher, log}
 
@@ -53,8 +53,9 @@ object DemoApp extends App {
 
   val talkToTheBoss = new TalkToTheBossRouteRoute(bossProxy)
   val talkToATeamMember = new TalkToATeamMemberRoute(teamMembers)
+  val healthChecks = new HealthCheckRoute(system)
 
-  Http().bindAndHandle(concat(talkToTheBoss.route(), talkToATeamMember.route(), ClusterStateRoute.routeGetMembers(cluster)), "0.0.0.0", 8080)
+  Http().bindAndHandle(concat(talkToTheBoss.route(), talkToATeamMember.route(), ClusterStateRoute.routeGetMembers(cluster), healthChecks.healthChecks), "0.0.0.0", 8080)
 
   Cluster(system).registerOnMemberUp({
     log.info("Cluster member is up!")

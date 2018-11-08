@@ -2,7 +2,7 @@ package akka.kubernetes.sample
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpMessage, HttpRequest, StatusCodes}
+import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.management.cluster.{ClusterHttpManagementJsonProtocol, ClusterMembers}
 import akka.stream.ActorMaterializer
@@ -18,12 +18,21 @@ class AkkaBossSpec extends WordSpec with BeforeAndAfterAll with ScalaFutures wit
 
   val target = System.getProperty("akka.k8s.target", "http://localhost:8080")
   val clusterSize = System.getProperty("akka.k8s.cluster-size", "1").toInt
+  val deployedVersion = System.getProperty("akka.deployment-version", "LOCAL")
 
   val log = system.log
 
   log.info("Running with target {} clusterSize {}", target, clusterSize)
 
+  "Version deployed" should {
+    "should have been updated" in {
+      val response = Http().singleRequest(HttpRequest(uri = s"$target/version")).futureValue
+      Unmarshal(response.entity).to[String].futureValue shouldEqual deployedVersion
+    }
+  }
+
   "Cluster formation" should {
+
     "work" in {
       eventually {
         val response = Http().singleRequest(HttpRequest(uri = s"$target/cluster/members")).futureValue
