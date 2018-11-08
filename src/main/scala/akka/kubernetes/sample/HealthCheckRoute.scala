@@ -11,7 +11,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 
 object DeploymentVersion {
-  val Version: String = System.getProperty("akka.deployment-version", "LOCAL")
+  val Version: String = Option(System.getenv("VERSION")).getOrElse("LOCAL")
 }
 
 class HealthCheckRoute(system: ActorSystem) {

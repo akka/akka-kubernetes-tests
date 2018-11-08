@@ -14,20 +14,22 @@ class AkkaKubernetesSpec extends WordSpec with BeforeAndAfterAll with ScalaFutur
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
-  implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds), interval = Span(100, Millis))
+  implicit override val patienceConfig = PatienceConfig(timeout = Span(10, Seconds), interval = Span(500, Millis))
 
   val target = System.getProperty("akka.k8s.target", "http://localhost:8080")
   val clusterSize = System.getProperty("akka.k8s.cluster-size", "1").toInt
-  val deployedVersion = System.getProperty("akka.deployment-version", "LOCAL")
+  val deployedVersion = System.getProperty("akka.k8s.deployment-version", "LOCAL")
 
   val log = system.log
 
-  log.info("Running with target {} clusterSize {}", target, clusterSize)
+  log.info("Running with target {} clusterSize {} version {}", target, clusterSize, deployedVersion)
 
   "Version deployed" should {
     "should have been updated" in {
-      val response = Http().singleRequest(HttpRequest(uri = s"$target/version")).futureValue
-      Unmarshal(response.entity).to[String].futureValue shouldEqual deployedVersion
+      eventually {
+        val response = Http().singleRequest(HttpRequest(uri = s"$target/version")).futureValue
+        Unmarshal(response.entity).to[String].futureValue shouldEqual deployedVersion
+      }
     }
   }
 
