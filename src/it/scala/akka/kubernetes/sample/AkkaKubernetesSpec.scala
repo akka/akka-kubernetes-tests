@@ -10,7 +10,7 @@ import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 
-class AkkaBossSpec extends WordSpec with BeforeAndAfterAll with ScalaFutures with Matchers with ClusterHttpManagementJsonProtocol with Eventually {
+class AkkaKubernetesSpec extends WordSpec with BeforeAndAfterAll with ScalaFutures with Matchers with ClusterHttpManagementJsonProtocol with Eventually {
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
@@ -39,8 +39,10 @@ class AkkaBossSpec extends WordSpec with BeforeAndAfterAll with ScalaFutures wit
         response.status shouldEqual StatusCodes.OK
 
         val clusterMembers: ClusterMembers = Unmarshal(response).to[ClusterMembers].futureValue
-        clusterMembers.members.size shouldEqual clusterSize
-        clusterMembers.unreachable shouldEqual Seq.empty
+        withClue("Latest response: " + clusterMembers) {
+          clusterMembers.members.size shouldEqual clusterSize
+          clusterMembers.unreachable shouldEqual Seq.empty
+        }
       }
     }
   }
