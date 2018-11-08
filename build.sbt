@@ -1,9 +1,6 @@
 import Dependencies._
 import com.typesafe.sbt.packager.docker._
 
-enablePlugins(JavaServerAppPackaging)
-configs(IntegrationTest)
-Defaults.itSettings
 // To be compatible with Docker tags
 version in ThisBuild ~= (_.replace('+', '-'))
 
@@ -57,8 +54,8 @@ lazy val root = (project in file("."))
     javaOptions in IntegrationTest ++= collection.JavaConverters.propertiesAsScalaMap(System.getProperties)
       .collect { case (key, value) if key.startsWith("akka") => "-D" + key + "=" + value }.toSeq,
 
-
   )
-
-
+  .settings(Defaults.itSettings)
+  .enablePlugins(JavaServerAppPackaging)
+  .configs(IntegrationTest)
 
