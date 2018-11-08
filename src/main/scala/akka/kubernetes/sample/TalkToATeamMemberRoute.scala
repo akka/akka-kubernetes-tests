@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018 Lightbend Inc. <http://www.lightbend.com>
+ */
+
 package akka.kubernetes.sample
 
 import akka.actor.ActorRef
@@ -12,7 +16,7 @@ import scala.util.{Failure, Success}
 
 class TalkToATeamMemberRoute(sharding: ActorRef) {
   implicit val timeout = Timeout(10.second)
-  def route() = {
+  def route() =
     extractActorSystem { as =>
       path("team-member" / Segment) { name =>
         get {
@@ -24,6 +28,5 @@ class TalkToATeamMemberRoute(sharding: ActorRef) {
         }
       }
     }
-  }
 
 }

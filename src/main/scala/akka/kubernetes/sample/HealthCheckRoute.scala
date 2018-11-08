@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2018 Lightbend Inc. <http://www.lightbend.com>
  */
+
 package akka.kubernetes.sample
 
 import akka.actor.ActorSystem
@@ -36,6 +37,7 @@ class HealthCheckRoute(system: ActorSystem) {
         }
       },
       path("version") {
-        complete(StatusCodes.OK, DeploymentVersion.Version)
-      })
+        complete(DeploymentVersion.Version)
+      }
+    )
 }

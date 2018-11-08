@@ -1,12 +1,18 @@
 /*
- * Copyright (C) 2017 Lightbend Inc. <http://www.lightbend.com>
+ * Copyright (C) 2018 Lightbend Inc. <http://www.lightbend.com>
  */
+
 package akka.kubernetes.sample
 
 import akka.actor.{Actor, ActorLogging, ActorSystem, PoisonPill, Props}
 import akka.cluster.ClusterEvent.ClusterDomainEvent
 import akka.cluster.sharding.{ClusterSharding, ClusterShardingSettings}
-import akka.cluster.singleton.{ClusterSingletonManager, ClusterSingletonManagerSettings, ClusterSingletonProxy, ClusterSingletonProxySettings}
+import akka.cluster.singleton.{
+  ClusterSingletonManager,
+  ClusterSingletonManagerSettings,
+  ClusterSingletonProxy,
+  ClusterSingletonProxySettings
+}
 import akka.cluster.{Cluster, ClusterEvent}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
@@ -30,16 +36,16 @@ object DemoApp extends App {
   ClusterBootstrap(system).start()
 
   system.actorOf(
-    ClusterSingletonManager.props(
-      singletonProps = Props(new AkkaBoss("patriknw")),
-      terminationMessage = PoisonPill,
-      settings = ClusterSingletonManagerSettings(system)), "boss")
+    ClusterSingletonManager.props(singletonProps = Props(new AkkaBoss("patriknw")),
+                                  terminationMessage = PoisonPill,
+                                  settings = ClusterSingletonManagerSettings(system)),
+    "boss"
+  )
 
   val bossProxy = system.actorOf(
-    ClusterSingletonProxy.props(
-      singletonManagerPath = "/user/boss",
-      settings = ClusterSingletonProxySettings(system)),
-    name = "bossProxy")
+    ClusterSingletonProxy.props(singletonManagerPath = "/user/boss", settings = ClusterSingletonProxySettings(system)),
+    name = "bossProxy"
+  )
 
   val teamMembers = ClusterSharding(system).start(
     "team-member",
@@ -49,18 +55,24 @@ object DemoApp extends App {
     AkkaMember.extractShardId
   )
 
-  cluster.subscribe(system.actorOf(Props[ClusterWatcher]), ClusterEvent.InitialStateAsEvents, classOf[ClusterDomainEvent])
+  cluster.subscribe(system.actorOf(Props[ClusterWatcher]),
+                    ClusterEvent.InitialStateAsEvents,
+                    classOf[ClusterDomainEvent])
 
   val talkToTheBoss = new TalkToTheBossRouteRoute(bossProxy)
   val talkToATeamMember = new TalkToATeamMemberRoute(teamMembers)
   val healthChecks = new HealthCheckRoute(system)
 
-  Http().bindAndHandle(concat(talkToTheBoss.route(), talkToATeamMember.route(), ClusterStateRoute.routeGetMembers(cluster), healthChecks.healthChecks), "0.0.0.0", 8080)
+  Http().bindAndHandle(concat(talkToTheBoss.route(),
+                              talkToATeamMember.route(),
+                              ClusterStateRoute.routeGetMembers(cluster),
+                              healthChecks.healthChecks),
+                       "0.0.0.0",
+                       8080)
 
   Cluster(system).registerOnMemberUp({
     log.info("Cluster member is up!")
   })
-
 
 }
 

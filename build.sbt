@@ -2,16 +2,36 @@ import Dependencies._
 import com.typesafe.sbt.packager.docker._
 
 enablePlugins(JavaServerAppPackaging)
-
 configs(IntegrationTest)
 Defaults.itSettings
-
+// To be compatible with Docker tags
 version in ThisBuild ~= (_.replace('+', '-'))
 
 lazy val root = (project in file("."))
   .configs(IntegrationTest)
   .settings(
+    organization := "com.lightbend.akka",
     name := "akka-kubernetes",
+    organizationName := "Lightbend Inc.",
+    startYear := Some(2018),
+    licenses := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))),
+    scalafmtOnCompile := true,
+    scalacOptions ++= Seq(
+      "-encoding",
+      "UTF-8",
+      "-feature",
+      "-unchecked",
+      "-deprecation",
+      "-Xlint",
+      "-Yno-adapted-args",
+      "-Ywarn-dead-code",
+      "-Xfuture"
+    ),
+    headerLicense := Some(
+      HeaderLicense.Custom(
+        """Copyright (C) 2018 Lightbend Inc. <http://www.lightbend.com>"""
+      )
+    ),
     Defaults.itSettings,
 
     libraryDependencies ++= ServiceDeps,

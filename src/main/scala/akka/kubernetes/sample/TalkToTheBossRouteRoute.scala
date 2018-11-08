@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018 Lightbend Inc. <http://www.lightbend.com>
+ */
+
 package akka.kubernetes.sample
 
 import akka.actor.ActorRef
@@ -11,7 +15,7 @@ import scala.util.{Failure, Success}
 
 class TalkToTheBossRouteRoute(boss: ActorRef) {
   implicit val timeout = Timeout(10.second)
-  def route() = {
+  def route() =
     extractActorSystem { as =>
       path("boss") {
         get {
@@ -23,6 +27,5 @@ class TalkToTheBossRouteRoute(boss: ActorRef) {
         }
       }
     }
-  }
 
 }

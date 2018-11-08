@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018 Lightbend Inc. <http://www.lightbend.com>
+ */
+
 package akka.kubernetes.sample
 
 import akka.actor.{Actor, Stash}
@@ -11,21 +15,21 @@ case object AkkaMember {
   case class Hello(name: String)
 
   val extractEntityId: ShardRegion.ExtractEntityId = {
-    case msg @ Hello(id)               ⇒ (id, msg)
+    case msg @ Hello(id) ⇒ (id, msg)
   }
 
   val numberOfShards = 100
 
   val extractShardId: ShardRegion.ExtractShardId = {
-    case Hello(id)               ⇒ (id.hashCode % numberOfShards).toString
+    case Hello(id) ⇒ (id.hashCode % numberOfShards).toString
   }
 }
 
 class AkkaMember() extends Actor with Stash {
-   val bossProxy = context.system.actorOf(
-    ClusterSingletonProxy.props(
-      singletonManagerPath = "/user/boss",
-      settings = ClusterSingletonProxySettings(context.system)))
+  val bossProxy = context.system.actorOf(
+    ClusterSingletonProxy.props(singletonManagerPath = "/user/boss",
+                                settings = ClusterSingletonProxySettings(context.system))
+  )
 
   val name = self.path.name
   val log = Logging(this)

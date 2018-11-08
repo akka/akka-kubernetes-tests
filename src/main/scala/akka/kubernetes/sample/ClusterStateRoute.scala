@@ -1,7 +1,16 @@
+/*
+ * Copyright (C) 2018 Lightbend Inc. <http://www.lightbend.com>
+ */
+
 package akka.kubernetes.sample
 
 import akka.cluster.{Cluster, Member, MemberStatus}
-import akka.management.cluster.{ClusterHttpManagementJsonProtocol, ClusterMembers, ClusterReadViewAccess, ClusterUnreachableMember}
+import akka.management.cluster.{
+  ClusterHttpManagementJsonProtocol,
+  ClusterMembers,
+  ClusterReadViewAccess,
+  ClusterUnreachableMember
+}
 
 // Just want the read view
 object ClusterStateRoute extends ClusterHttpManagementJsonProtocol {
@@ -22,8 +31,8 @@ object ClusterStateRoute extends ClusterHttpManagementJsonProtocol {
           }
 
           val thisDcMembers =
-            cluster.state.members.toSeq.filter(
-              node => node.status == MemberStatus.Up && node.dataCenter == cluster.selfDataCenter)
+            cluster.state.members.toSeq
+              .filter(node => node.status == MemberStatus.Up && node.dataCenter == cluster.selfDataCenter)
 
           val leader = readView.leader.map(_.toString)
 
