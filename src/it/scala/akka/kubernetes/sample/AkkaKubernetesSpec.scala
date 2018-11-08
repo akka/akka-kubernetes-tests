@@ -14,7 +14,7 @@ class AkkaKubernetesSpec extends WordSpec with BeforeAndAfterAll with ScalaFutur
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
-  implicit override val patienceConfig = PatienceConfig(timeout = Span(20, Seconds), interval = Span(500, Millis))
+  implicit override val patienceConfig = PatienceConfig(timeout = Span(30, Seconds), interval = Span(2, Millis))
 
   val target = System.getProperty("akka.k8s.target", "http://localhost:8080")
   val clusterSize = System.getProperty("akka.k8s.cluster-size", "1").toInt
@@ -28,7 +28,9 @@ class AkkaKubernetesSpec extends WordSpec with BeforeAndAfterAll with ScalaFutur
     "should have been updated" in {
       eventually {
         val response = Http().singleRequest(HttpRequest(uri = s"$target/version")).futureValue
-        Unmarshal(response.entity).to[String].futureValue shouldEqual deployedVersion
+        val reportedVersion = Unmarshal(response.entity).to[String].futureValue
+        log.info("Reported version is: {}", reportedVersion)
+        reportedVersion shouldEqual deployedVersion
       }
     }
   }
@@ -45,6 +47,7 @@ class AkkaKubernetesSpec extends WordSpec with BeforeAndAfterAll with ScalaFutur
           clusterMembers.members.size shouldEqual clusterSize
           clusterMembers.unreachable shouldEqual Seq.empty
         }
+        log.info("Current cluster members: {}", clusterMembers)
       }
     }
   }
