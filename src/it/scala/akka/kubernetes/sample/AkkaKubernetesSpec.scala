@@ -14,7 +14,7 @@ class AkkaKubernetesSpec extends WordSpec with BeforeAndAfterAll with ScalaFutur
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
-  implicit override val patienceConfig = PatienceConfig(timeout = Span(10, Seconds), interval = Span(500, Millis))
+  implicit override val patienceConfig = PatienceConfig(timeout = Span(20, Seconds), interval = Span(500, Millis))
 
   val target = System.getProperty("akka.k8s.target", "http://localhost:8080")
   val clusterSize = System.getProperty("akka.k8s.cluster-size", "1").toInt
