@@ -7,18 +7,18 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.management.cluster.{ClusterHttpManagementJsonProtocol, ClusterMembers}
 import akka.stream.ActorMaterializer
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
-import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 
 class AkkaKubernetesSpec extends WordSpec with BeforeAndAfterAll with ScalaFutures with Matchers with ClusterHttpManagementJsonProtocol with Eventually {
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
-  implicit override val patienceConfig = PatienceConfig(timeout = Span(30, Seconds), interval = Span(2, Millis))
+  implicit override val patienceConfig = PatienceConfig(timeout = Span(30, Seconds), interval = Span(2, Seconds))
 
-  val target = System.getProperty("akka.k8s.target", "http://localhost:8080")
-  val clusterSize = System.getProperty("akka.k8s.cluster-size", "1").toInt
-  val deployedVersion = System.getProperty("akka.k8s.deployment-version", "LOCAL")
+  val target = system.settings.config.getString("akka.k8s.target")
+  val clusterSize = system.settings.config.getInt("akka.k8s.cluster-size")
+  val deployedVersion = system.settings.config.getString("akka.k8s.deployment-version")
 
   val log = system.log
 

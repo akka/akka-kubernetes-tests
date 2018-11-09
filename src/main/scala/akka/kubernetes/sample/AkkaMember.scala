@@ -21,7 +21,7 @@ case object AkkaMember {
   val numberOfShards = 100
 
   val extractShardId: ShardRegion.ExtractShardId = {
-    case Hello(id) ⇒ (id.hashCode % numberOfShards).toString
+    case Hello(id) ⇒ math.abs(id.hashCode % numberOfShards).toString
   }
 }
 
