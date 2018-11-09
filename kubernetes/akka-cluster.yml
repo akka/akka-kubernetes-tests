@@ -105,6 +105,7 @@ spec:
   port:
     targetPort: http
   tls:
+    insecureEdgeTerminationPolicy: Allow
     termination: edge
   to:
     kind: Service
