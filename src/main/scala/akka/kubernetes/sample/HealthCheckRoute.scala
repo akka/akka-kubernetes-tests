@@ -15,6 +15,7 @@ object DeploymentVersion {
   val Version: String = Option(System.getenv("VERSION")).getOrElse("LOCAL")
 }
 
+// TODO switch to built in one #364
 class HealthCheckRoute(system: ActorSystem) {
 
   private val log: LoggingAdapter = Logging(system, getClass)
