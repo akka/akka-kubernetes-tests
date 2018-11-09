@@ -33,6 +33,7 @@ jobs:
     - oc project akka-kubernetes-tests
     - export VERSION=`sbt -Dsbt.log.noformat=true docker:publish version | tail -n 1 | awk '{ print $NF }'`; echo $VERSION; cat ./kubernetes/akka-cluster.yml | sed s/latest/$VERSION/g | oc apply -f -
     - sbt -Dakka.k8s.deployment-version=$VERSION -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes-tests.centralpark.lightbend.com" it:test
+    - oc get pods
 stages:
 - name: test
   if: NOT tag =~ ^v
