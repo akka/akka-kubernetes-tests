@@ -90,7 +90,7 @@ spec:
     targetPort: 8080
   selector:
     app: akka-kubernetes
-  type: LoadBalancer
+  type: ClusterIP
 ---
 # Can likely be changed to an Ingress
 apiVersion: route.openshift.io/v1
