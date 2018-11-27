@@ -29,6 +29,7 @@ lazy val root = (project in file("."))
         """Copyright (C) 2018 Lightbend Inc. <http://www.lightbend.com>"""
       )
     ),
+    resolvers += Resolver.bintrayRepo("akka", "maven"),
     Defaults.itSettings,
 
     libraryDependencies ++= ServiceDeps,
