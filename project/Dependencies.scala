@@ -15,6 +15,8 @@ object Dependencies {
   val AkkaServiceDiscoveryConfig = "com.lightbend.akka.discovery" %% "akka-discovery-config" % AkkaManagementVersion
   val AkkaClusterHttp =  "com.lightbend.akka.management" %% "akka-management-cluster-http" % AkkaManagementVersion
 
+  val SplitBrainResolver = "com.lightbend.akka" %% "akka-split-brain-resolver" % "1.1.5"
+
   val Logback = "ch.qos.logback" % "logback-classic" % "1.2.3"
 
   val ScalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % "it,test"
@@ -22,6 +24,7 @@ object Dependencies {
   val ServiceDeps = Seq(
     AkkaBootstrap, AkkaServiceDiscoveryK8Api, AkkaServiceDiscoveryConfig, AkkaClusterHttp,
     AkkaCluster, AkkaClusterSharding, AkkaClusterTools, AkkaSlj4j,
+    SplitBrainResolver,
     Logback,
     ScalaTest
   )
