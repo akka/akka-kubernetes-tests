@@ -1,0 +1,44 @@
+apiVersion: couchbase.com/v1
+kind: CouchbaseCluster
+metadata:
+  name: akka-couchbase-cluster
+  namespace: akka-couchbase
+spec:
+  baseImage: registry.connect.redhat.com/couchbase/server
+  version: 5.5.3-1
+  authSecret: akka-couchbase-cluster-auth
+  exposeAdminConsole: true
+  adminConsoleServices:
+    - data
+  cluster:
+    dataServiceMemoryQuota: 1024
+    indexServiceMemoryQuota: 1024
+    searchServiceMemoryQuota: 1024
+    eventingServiceMemoryQuota: 1024
+    analyticsServiceMemoryQuota: 2048
+    indexStorageSetting: memory_optimized
+    autoFailoverTimeout: 120
+    autoFailoverMaxCount: 3
+    autoFailoverOnDataDiskIssues: true
+    autoFailoverOnDataDiskIssuesTimePeriod: 120
+    autoFailoverServerGroup: false
+  buckets:
+    - name: akka
+      type: couchbase
+      memoryQuota: 512
+      replicas: 1
+      ioPriority: high
+      evictionPolicy: fullEviction
+      conflictResolution: seqno
+      enableFlush: true
+      enableIndexReplica: false
+  servers:
+    - size: 3
+      name: all_services
+      services:
+        - data
+        - index
+        - query
+        - search
+        - eventing
+        - analytics
