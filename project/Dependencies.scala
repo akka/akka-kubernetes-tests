@@ -4,7 +4,7 @@ object Dependencies {
 
   val AkkaVersion = "2.5.18"
   val AkkaManagementVersion = "0.20.0"
-  val AkkaPersistenceCouchbaseVersion = "0.2+12-23b2ab6e"
+  val AkkaPersistenceCouchbaseVersion = "1.0-RC1+0-b2a7e02a+20190103-0749"
 
   val AkkaCluster = "com.typesafe.akka" %% "akka-cluster" % AkkaVersion
   val AkkaClusterSharding = "com.typesafe.akka" %% "akka-cluster-sharding" % AkkaVersion

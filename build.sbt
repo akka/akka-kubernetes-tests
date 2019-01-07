@@ -59,7 +59,7 @@ lazy val root = (project in file("."))
     )
   )
 
-lazy val `cluster-sharding-no-persistence` = (project in file("cluster-sharding-no-persistence"))
+lazy val `cluster-sharding` = (project in file("cluster-sharding"))
   .enablePlugins(JavaServerAppPackaging)
   .configs(IntegrationTest)
   .settings(

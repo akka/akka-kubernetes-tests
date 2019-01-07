@@ -47,7 +47,7 @@ spec:
         - name: ROLE
           value: simple-query
         - name: LOG_LEVEL
-          value: DEBUG
+          value: INFO
         readinessProbe:
           httpGet:
             path: /ready

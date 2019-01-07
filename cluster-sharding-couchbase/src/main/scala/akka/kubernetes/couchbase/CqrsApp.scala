@@ -54,16 +54,17 @@ object CqrsApp {
         .currentEventsByTag("tag1", NoOffset)
         .runFold(0)((count, _) => count + 1)
         .onComplete { t: Try[Int] =>
-          system.log.info("Query finished for tag1 in {}. Result: {}", System.currentTimeMillis() - startTime, t)
+          system.log.info("Query finished for tag1 in {}. Read {} rows",
+                          (System.currentTimeMillis() - startTime).millis.toSeconds,
+                          t)
         }
-
     }
 
     // Every instance will add 100 persistent actors and second 2 messages to each per 2 seconds
     def testIt(system: ActorSystem, shardedSwitch: ShardedSwitchEntity): Unit = {
       val uuid = UUID.randomUUID()
       val nrSwitches = 100
-      def switchName(nr: Int) = s"switch-$uuid-nr"
+      def switchName(nr: Int) = s"switch-$uuid-$nr"
       log.info("Creating {} switches with uuid {}", nrSwitches, uuid)
       (0 until nrSwitches) foreach { s =>
         shardedSwitch.tell(switchName(s), SwitchEntity.CreateSwitch(6))
