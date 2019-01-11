@@ -1,8 +1,6 @@
 sudo: required
 dist: xenial
 language: scala
-jdk:
-- oraclejdk8
 before_install:
 - curl -sL https://raw.githubusercontent.com/shyiko/jabba/0.10.1/install.sh | bash
   && . ~/.jabba/jabba.sh
@@ -31,8 +29,8 @@ jobs:
     - oc login https://centralpark.lightbend.com --username=$OC_USERNAME --password=$OC_PASSWORD
     - oc status
     - oc project akka-kubernetes-tests
-    - export VERSION=`sbt -Dsbt.log.noformat=true docker:publish version | tail -n 1 | awk '{ print $NF }'`; echo $VERSION; cat ./kubernetes/akka-cluster.yml | sed s/latest/$VERSION/g | oc apply -f -
-    - sbt -Dakka.k8s.deployment-version=$VERSION -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes-tests.centralpark.lightbend.com" it:test
+    - export VERSION=`sbt -Dsbt.log.noformat=true cluster-sharding/docker:publish cluster-sharding/version | tail -n 1 | awk '{ print $NF }'`; echo $VERSION; cat ./cluster-sharding/kubernetes/akka-cluster.yml | sed s/latest/$VERSION/g | oc apply -f -
+    - sbt -Dakka.k8s.deployment-version=$VERSION -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes-tests.centralpark.lightbend.com" cluster-sharding/it:test
     - oc get pods
 stages:
 - name: test

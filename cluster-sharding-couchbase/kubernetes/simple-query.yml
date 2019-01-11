@@ -1,0 +1,60 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: akka-kubernetes-couchbase-simple-query
+    cluster: akka-kubernetes-couchbase
+  name: akka-kubernetes-couchbase-simple-query
+  namespace: akka-couchbase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+     app: akka-kubernetes-couchbase-simple-query
+  template:
+    metadata:
+      labels:
+        app: akka-kubernetes-couchbase-simple-query
+        cluster: akka-kubernetes-couchbase
+    spec:
+      containers:
+      - name: akka-kubernetes-coucbase-simple-query
+        image: kubakka/akka-kubernetes-couchbase:latest
+        ports:
+        - name: management
+          containerPort: 8558
+          protocol: TCP
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: COUCHBASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+             name: akka-couchbase-cluster-auth
+             key: username
+        - name: COUCHBASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+             name: akka-couchbase-cluster-auth
+             key: password
+        - name: VERSION
+          value: latest
+        - name: ROLE
+          value: simple-query
+        - name: LOG_LEVEL
+          value: INFO
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: management
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: management
+
+

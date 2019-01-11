@@ -1,0 +1,64 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: akka-kubernetes-couchbase-write
+    cluster: akka-kubernetes-couchbase
+  name: akka-kubernetes-couchbase-write
+  namespace: akka-couchbase
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+     app: akka-kubernetes-couchbase-write
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+
+  template:
+    metadata:
+      labels:
+        app: akka-kubernetes-couchbase-write
+        cluster: akka-kubernetes-couchbase
+    spec:
+      containers:
+      - name: akka-kubernetes-coucbase-write
+        image: kubakka/akka-kubernetes-couchbase:latest
+        ports:
+        - name: management
+          containerPort: 8558
+          protocol: TCP
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: COUCHBASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+             name: akka-couchbase-cluster-auth
+             key: username
+        - name: COUCHBASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+             name: akka-couchbase-cluster-auth
+             key: password
+        - name: VERSION
+          value: latest
+        - name: ROLE
+          value: write-side
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: management
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: management
+
+
