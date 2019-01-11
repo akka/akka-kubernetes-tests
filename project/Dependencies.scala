@@ -4,6 +4,7 @@ object Dependencies {
 
   val AkkaVersion = "2.5.18"
   val AkkaManagementVersion = "0.20.0"
+  val AkkaPersistenceCouchbaseVersion = "1.0-RC1+0-b2a7e02a+20190103-0749"
 
   val AkkaCluster = "com.typesafe.akka" %% "akka-cluster" % AkkaVersion
   val AkkaClusterSharding = "com.typesafe.akka" %% "akka-cluster-sharding" % AkkaVersion
@@ -15,6 +16,8 @@ object Dependencies {
   val AkkaServiceDiscoveryConfig = "com.lightbend.akka.discovery" %% "akka-discovery-config" % AkkaManagementVersion
   val AkkaClusterHttp =  "com.lightbend.akka.management" %% "akka-management-cluster-http" % AkkaManagementVersion
 
+  val AkkaPersistenceCouchbase = "com.lightbend.akka" %% "akka-persistence-couchbase" % AkkaPersistenceCouchbaseVersion
+
   val Logback = "ch.qos.logback" % "logback-classic" % "1.2.3"
 
   val ScalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % "it,test"
@@ -25,4 +28,9 @@ object Dependencies {
     Logback,
     ScalaTest
   )
+
+  val CouchbaseDeps = ServiceDeps ++ Seq(
+    AkkaPersistenceCouchbase
+  )
 }
+

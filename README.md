@@ -16,6 +16,13 @@ The tests exercise:
 * Cluster singletons
 * Cluster sharding
 
+## Persistence
+
+### Couchbase
+
+The [`cluster-sharding-couchbase`](cluster-sharding-couchbase/README.md) has an application that tests Akka Persistence Couchbase. This is
+not run as part of CI.
+
 
 
 

@@ -1,0 +1,39 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-reader
+  namespace: akka-couchbase
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+  namespace: akka-couchbase
+subjects:
+- kind: User
+  name: system:serviceaccount:akka-couchbase:default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: akka-kubernetes-couchbase
+  name: akka-kubernetes-couchbase
+  namespace: akka-couchbase
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: akka-kubernetes-couchbase
+  type: ClusterIP
