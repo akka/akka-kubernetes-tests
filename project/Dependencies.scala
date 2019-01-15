@@ -3,8 +3,7 @@ import sbt._
 object Dependencies {
 
   val AkkaVersion = "2.5.19"
-  // TODO upgrade to 1.0 once released
-  val AkkaManagementVersion = "0.20.0+48-e77bde19+20190111-1826"
+  val AkkaManagementVersion = "1.0.0-RC1"
   val AkkaPersistenceCouchbaseVersion = "1.0-RC2"
 
   val AkkaCluster = "com.typesafe.akka" %% "akka-cluster" % AkkaVersion
