@@ -1,16 +1,13 @@
 package akka.kubernetes.couchbase
 
-import akka.Done
 import akka.actor.{Actor, ActorLogging, Props}
-import akka.event.Logging
 import akka.persistence.couchbase.UUIDs
 import akka.persistence.couchbase.scaladsl.CouchbaseReadJournal
 import akka.persistence.query._
 import akka.stream.{ActorMaterializer, KillSwitches, Materializer}
-import akka.stream.scaladsl.{RestartSource, Sink, Source}
-import com.sun.rowset.internal.Row
+import akka.stream.scaladsl.{RestartSource, Sink}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
 object EventProcessor {

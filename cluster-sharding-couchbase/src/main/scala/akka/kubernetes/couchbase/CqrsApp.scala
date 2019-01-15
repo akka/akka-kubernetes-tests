@@ -5,8 +5,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
-import akka.management.AkkaManagement
 import akka.management.cluster.bootstrap.ClusterBootstrap
+import akka.management.scaladsl.AkkaManagement
 import akka.persistence.couchbase.scaladsl.CouchbaseReadJournal
 import akka.persistence.query.{NoOffset, PersistenceQuery}
 import akka.stream.ActorMaterializer
