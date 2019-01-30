@@ -2,9 +2,9 @@ import sbt._
 
 object Dependencies {
 
-  val AkkaVersion = "2.5.18"
-  val AkkaManagementVersion = "0.20.0"
-  val AkkaPersistenceCouchbaseVersion = "1.0-RC1+0-b2a7e02a+20190103-0749"
+  val AkkaVersion = "2.5.19"
+  val AkkaManagementVersion = "1.0.0-RC1"
+  val AkkaPersistenceCouchbaseVersion = "1.0-RC2"
 
   val AkkaCluster = "com.typesafe.akka" %% "akka-cluster" % AkkaVersion
   val AkkaClusterSharding = "com.typesafe.akka" %% "akka-cluster-sharding" % AkkaVersion
@@ -13,7 +13,6 @@ object Dependencies {
 
   val AkkaBootstrap = "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % AkkaManagementVersion
   val AkkaServiceDiscoveryK8Api = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % AkkaManagementVersion
-  val AkkaServiceDiscoveryConfig = "com.lightbend.akka.discovery" %% "akka-discovery-config" % AkkaManagementVersion
   val AkkaClusterHttp =  "com.lightbend.akka.management" %% "akka-management-cluster-http" % AkkaManagementVersion
 
   val AkkaPersistenceCouchbase = "com.lightbend.akka" %% "akka-persistence-couchbase" % AkkaPersistenceCouchbaseVersion
@@ -23,7 +22,7 @@ object Dependencies {
   val ScalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % "it,test"
 
   val ServiceDeps = Seq(
-    AkkaBootstrap, AkkaServiceDiscoveryK8Api, AkkaServiceDiscoveryConfig, AkkaClusterHttp,
+    AkkaBootstrap, AkkaServiceDiscoveryK8Api, AkkaClusterHttp,
     AkkaCluster, AkkaClusterSharding, AkkaClusterTools, AkkaSlj4j,
     Logback,
     ScalaTest

@@ -3,6 +3,7 @@ import com.typesafe.sbt.packager.docker._
 
 // To be compatible with Docker tags
 version in ThisBuild ~= (_.replace('+', '-'))
+scalaVersion in ThisBuild := "2.12.8"
 
 val commonDockerSettings = Seq(
   dockerCommands :=
@@ -31,6 +32,7 @@ val commonItTestSettings = Seq(
 lazy val root = (project in file("."))
   .configs(IntegrationTest)
   .settings(
+    name := "akka-kubernetes-tests",
     inThisBuild(
       Seq(
         organization := "com.lightbend.akka",
@@ -57,7 +59,7 @@ lazy val root = (project in file("."))
         resolvers += Resolver.bintrayRepo("akka", "maven"),
       )
     )
-  )
+  ).aggregate(`cluster-sharding`, `cluster-sharding-couchbase`)
 
 lazy val `cluster-sharding` = (project in file("cluster-sharding"))
   .enablePlugins(JavaServerAppPackaging)
