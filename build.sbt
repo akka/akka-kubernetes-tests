@@ -12,6 +12,8 @@ val commonDockerSettings = Seq(
     },
   dockerExposedPorts := Seq(8080, 8558, 2552),
   dockerBaseImage := "openjdk:8-jre-alpine",
+  dockerRepository := Some("docker-registry-default.centralpark.lightbend.com"),
+  dockerUsername := Some("akka-kubernetes-tests"),
   dockerCommands ++= Seq(
     Cmd("USER", "root"),
     Cmd("RUN", "/sbin/apk", "add", "--no-cache", "bash", "bind-tools", "busybox-extras", "curl", "strace"),
@@ -20,6 +22,7 @@ val commonDockerSettings = Seq(
   dockerUsername := Some("kubakka"),
   dockerUpdateLatest := true,
 )
+
 
 val commonItTestSettings = Seq(
   javaOptions in IntegrationTest ++= collection.JavaConverters
@@ -75,6 +78,16 @@ lazy val `cluster-sharding-couchbase` = (project in file("cluster-sharding-couch
   .settings(
     name := "akka-kubernetes-couchbase",
     libraryDependencies ++= CouchbaseDeps,
+  )
+  .settings(commonItTestSettings)
+  .settings(commonDockerSettings)
+
+lazy val `chaos-cluster` = (project in file("chaos-cluster"))
+  .enablePlugins(JavaServerAppPackaging)
+  .configs(IntegrationTest)
+  .settings(
+    name := "chaos-cluster",
+    libraryDependencies ++= ServiceDeps,
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
