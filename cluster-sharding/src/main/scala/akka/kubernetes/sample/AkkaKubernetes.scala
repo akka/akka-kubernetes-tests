@@ -16,8 +16,8 @@ import akka.cluster.singleton.{
 import akka.cluster.{Cluster, ClusterEvent}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
-import akka.management.AkkaManagement
 import akka.management.cluster.bootstrap.ClusterBootstrap
+import akka.management.scaladsl.AkkaManagement
 import akka.stream.ActorMaterializer
 
 object DemoApp extends App {
@@ -61,14 +61,12 @@ object DemoApp extends App {
 
   val talkToTheBoss = new TalkToTheBossRouteRoute(bossProxy)
   val talkToATeamMember = new TalkToATeamMemberRoute(teamMembers)
-  val healthChecks = new HealthCheckRoute(system)
 
-  Http().bindAndHandle(concat(talkToTheBoss.route(),
-                              talkToATeamMember.route(),
-                              ClusterStateRoute.routeGetMembers(cluster),
-                              healthChecks.healthChecks),
-                       "0.0.0.0",
-                       8080)
+  Http().bindAndHandle(
+    concat(talkToTheBoss.route(), talkToATeamMember.route(), ClusterStateRoute.routeGetMembers(cluster), VersionRoute.versionRoute),
+    "0.0.0.0",
+    8080
+  )
 
   Cluster(system).registerOnMemberUp({
     log.info("Cluster member is up!")

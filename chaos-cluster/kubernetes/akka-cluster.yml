@@ -2,28 +2,32 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: akka-kubernetes
-  name: akka-kubernetes
+    app: chaos-cluster
+  name: chaos-cluster
   namespace: akka-kubernetes-tests
 spec:
   replicas: 3
   selector:
     matchLabels:
-     app: akka-kubernetes
+     app: chaos-cluster
   strategy:
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 0
     type: RollingUpdate
-
   template:
     metadata:
       labels:
-        app: akka-kubernetes
+        app: chaos-cluster
     spec:
       containers:
-      - name: akka-kubernetes
-        image: kubakka/akka-kubernetes:latest
+      - name: chaos-cluster
+        image: docker-registry-default.centralpark.lightbend.com/akka-kubernetes-tests/chaos-cluster
+        lifecycle:
+          preStop:
+            httpGet:
+              path: /hello # this kills the pod
+              port: http
         ports:
         - name: remoting
           containerPort: 2552
@@ -35,10 +39,12 @@ spec:
           containerPort: 8080
           protocol: TCP
         env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         - name: VERSION
           value: latest
-        - name: LOG_LEVEL
-          value: DEBUG
         readinessProbe:
           httpGet:
             path: /ready
@@ -47,38 +53,13 @@ spec:
           httpGet:
             path: /alive
             port: management
-
-
----
-kind: Role
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: pod-reader
-  namespace: akka-kubernetes-tests
-rules:
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get", "watch", "list"]
----
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: read-pods
-  namespace: akka-kubernetes-tests
-subjects:
-- kind: User
-  name: system:serviceaccount:akka-kubernetes-tests:default
-roleRef:
-  kind: Role
-  name: pod-reader
-  apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: akka-kubernetes
-  name: akka-kubernetes
+    app: chaos-cluster
+  name: chaos-cluster
   namespace: akka-kubernetes-tests
 spec:
   ports:
@@ -87,19 +68,18 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: akka-kubernetes
+    app: chaos-cluster
   type: ClusterIP
 ---
-# Can likely be changed to an Ingress
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   labels:
-    app: akka-kubernetes
-  name: akka-kubernetes
+    app: chaos-cluster
+  name: chaos-cluster
   namespace: akka-kubernetes-tests
 spec:
-  host: akka-kubernetes-tests.centralpark.lightbend.com
+  host: chaos-cluster-tests.centralpark.lightbend.com
   port:
     targetPort: http
   tls:
@@ -107,12 +87,12 @@ spec:
     termination: edge
   to:
     kind: Service
-    name: akka-kubernetes
+    name: chaos-cluster
     weight: 100
   wildcardPolicy: None
 status:
   ingress:
   - conditions:
-    host: akka-kubernetes-tests.centralpark.lightbend.com
+    host: chaos-cluster-tests.centralpark.lightbend.com
     routerName: router
     wildcardPolicy: None

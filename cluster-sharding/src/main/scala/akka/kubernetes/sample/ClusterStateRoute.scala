@@ -22,13 +22,16 @@ object ClusterStateRoute extends ClusterHttpManagementJsonProtocol {
     path("cluster" / "members") {
       get {
         complete {
-          val readView = ClusterReadViewAccess.internalReacView(cluster)
+          val readView = ClusterReadViewAccess.internalReadView(cluster)
           val members = readView.state.members.map(memberToClusterMember)
 
-          val unreachable = readView.reachability.observersGroupedByUnreachable.toSeq.sortBy(_._1).map {
-            case (subject, observers) ⇒
-              ClusterUnreachableMember(s"${subject.address}", observers.toSeq.sorted.map(m ⇒ s"${m.address}"))
-          }
+          val unreachable = readView.reachability.observersGroupedByUnreachable.toSeq
+            .sortBy(_._1)
+            .map {
+              case (subject, observers) ⇒
+                ClusterUnreachableMember(s"${subject.address}", observers.toSeq.sorted.map(m ⇒ s"${m.address}").toList)
+            }
+            .toList
 
           val thisDcMembers =
             cluster.state.members.toSeq
