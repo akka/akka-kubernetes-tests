@@ -8,7 +8,7 @@ object Dependencies {
   val SplitBrainResolverVersion =  "1.1.7+18-f520adf1" // TODO update
 
   val AkkaCluster = "com.typesafe.akka" %% "akka-cluster" % AkkaVersion
-  val AkkaDiscovery = "com.typesafe.akka" %% "akka-disocvery" % AkkaVersion
+  val AkkaDiscovery = "com.typesafe.akka" %% "akka-discovery" % AkkaVersion
   val AkkaClusterSharding = "com.typesafe.akka" %% "akka-cluster-sharding" % AkkaVersion
   val AkkaClusterTools = "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion
   val AkkaSlj4j = "com.typesafe.akka" %% "akka-slf4j" % AkkaVersion
