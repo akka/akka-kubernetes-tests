@@ -59,6 +59,7 @@ lazy val root = (project in file("."))
           )
         ),
         resolvers += Resolver.bintrayRepo("akka", "maven"),
+        resolvers += Resolver.url("lightbend-commercial", url("https://repo.lightbend.com/commercial-releases"))(Resolver.ivyStylePatterns)
       )
     )
   ).aggregate(`cluster-sharding`, `cluster-sharding-couchbase`)
