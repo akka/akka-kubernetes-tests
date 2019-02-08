@@ -4,7 +4,7 @@ Basic tests for Akka Cluster and friends on Kubernetes
 
 For each pull requests from this repository (not forks) and commits to master the following happens in travis:
 
-* Docker image is published to https://hub.docker.com/r/kubakka/akka-kubernetes/
+* Docker image is published to a registry inside an OpenShift cluster
 * A deployment is triggered to Lightbend's internal OpenShift cluster (https://centralpark.lightbend.com/)
 * Integration tests are run with `sbt it:test`
 
