@@ -5,7 +5,7 @@ object Dependencies {
   val AkkaVersion = "2.5.20"
   val AkkaManagementVersion = "1.0.0-RC2"
   val AkkaPersistenceCouchbaseVersion = "1.0-RC2"
-  val SplitBrainResolverVersion =  "1.1.7+18-f520adf1" // TODO update
+  val SplitBrainResolverVersion = "1.1.7+27-745cd37d"
 
   val AkkaCluster = "com.typesafe.akka" %% "akka-cluster" % AkkaVersion
   val AkkaDiscovery = "com.typesafe.akka" %% "akka-discovery" % AkkaVersion
