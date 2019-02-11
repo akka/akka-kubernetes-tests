@@ -20,7 +20,7 @@ object Dependencies {
   val AkkaPersistenceCouchbase = "com.lightbend.akka" %% "akka-persistence-couchbase" % AkkaPersistenceCouchbaseVersion
 
   val SplitBrainResolver = "com.lightbend.akka" %% "akka-split-brain-resolver" % SplitBrainResolverVersion
-  val KubernetesLease = "com.lightbend.akka" %% "lease-kubernetes" % SplitBrainResolverVersion
+  val KubernetesLease = "com.lightbend.akka" %% "akka-lease-kubernetes" % SplitBrainResolverVersion
 
   val Logback = "ch.qos.logback" % "logback-classic" % "1.2.3"
 
@@ -29,7 +29,8 @@ object Dependencies {
   val ServiceDeps = Seq(
     AkkaBootstrap, AkkaServiceDiscoveryK8Api, AkkaClusterHttp, AkkaDiscovery,
     AkkaCluster, AkkaClusterSharding, AkkaClusterTools, AkkaSlj4j,
-    SplitBrainResolver, KubernetesLease,
+    SplitBrainResolver,
+    KubernetesLease,
     Logback,
     ScalaTest
   )
