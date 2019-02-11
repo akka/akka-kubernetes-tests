@@ -4,7 +4,7 @@ language: scala
 before_install:
 - curl -sL https://raw.githubusercontent.com/shyiko/jabba/0.10.1/install.sh | bash
   && . ~/.jabba/jabba.sh
-- mkdir ~/lightbend/ && openssl aes-256-cbc -K $encrypted_f00e0127a927_key -iv $encrypted_f00e0127a927_iv -in commercial.credentials.enc -out ~/.lightbend/commercial.credentials -d
+- mkdir ~/.lightbend/ && openssl aes-256-cbc -K $encrypted_f00e0127a927_key -iv $encrypted_f00e0127a927_iv -in commercial.credentials.enc -out ~/.lightbend/commercial.credentials -d
 install:
 - $JABBA_HOME/bin/jabba install $TRAVIS_JDK && export JAVA_HOME="$JABBA_HOME/jdk/$TRAVIS_JDK"
   && export PATH="$JAVA_HOME/bin:$PATH" && java -Xmx32m -version
