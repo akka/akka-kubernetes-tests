@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: akka-kubernetes
-        image: kubakka/akka-kubernetes:latest
+        image: docker-registry-default.centralpark.lightbend.com/akka-kubernetes-tests/akka-kubernetes
         ports:
         - name: remoting
           containerPort: 2552
