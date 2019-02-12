@@ -63,7 +63,10 @@ object DemoApp extends App {
   val talkToATeamMember = new TalkToATeamMemberRoute(teamMembers)
 
   Http().bindAndHandle(
-    concat(talkToTheBoss.route(), talkToATeamMember.route(), ClusterStateRoute.routeGetMembers(cluster), VersionRoute.versionRoute),
+    concat(talkToTheBoss.route(),
+           talkToATeamMember.route(),
+           ClusterStateRoute.routeGetMembers(cluster),
+           VersionRoute.versionRoute),
     "0.0.0.0",
     8080
   )

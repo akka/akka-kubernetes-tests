@@ -4,6 +4,7 @@ language: scala
 before_install:
 - curl -sL https://raw.githubusercontent.com/shyiko/jabba/0.10.1/install.sh | bash
   && . ~/.jabba/jabba.sh
+- mkdir ~/.lightbend/ && openssl aes-256-cbc -K $encrypted_f00e0127a927_key -iv $encrypted_f00e0127a927_iv -in commercial.credentials.enc -out ~/.lightbend/commercial.credentials -d
 install:
 - $JABBA_HOME/bin/jabba install $TRAVIS_JDK && export JAVA_HOME="$JABBA_HOME/jdk/$TRAVIS_JDK"
   && export PATH="$JAVA_HOME/bin:$PATH" && java -Xmx32m -version
@@ -31,6 +32,7 @@ jobs:
     - oc login https://centralpark.lightbend.com --username=$OC_USERNAME --password=$OC_PASSWORD
     - oc status
     - oc project akka-kubernetes-tests
+    - oc registry login
     - export VERSION=`sbt -Dsbt.log.noformat=true cluster-sharding/docker:publish cluster-sharding/version | tail -n 1 | awk '{ print $NF }'`; echo $VERSION; cat ./cluster-sharding/kubernetes/akka-cluster.yml | sed s/latest/$VERSION/g | oc apply -f -
     - sbt -Dakka.k8s.deployment-version=$VERSION -Dakka.k8s.cluster-size=3 -Dakka.k8s.target="http://akka-kubernetes-tests.centralpark.lightbend.com" cluster-sharding/it:test
     - oc get pods
