@@ -58,8 +58,9 @@ lazy val root = (project in file("."))
             """Copyright (C) 2018 Lightbend Inc. <http://www.lightbend.com>"""
           )
         ),
-        resolvers += Resolver.bintrayRepo("akka", "maven"),
-        resolvers += Resolver.url("lightbend-commercial", url("https://repo.lightbend.com/commercial-releases"))(Resolver.ivyStylePatterns)
+        credentials += Credentials(Path.userHome / ".lightbend" / "commercial.credentials"),
+          resolvers += Resolver.bintrayRepo("akka", "maven"),
+        resolvers += Resolver.bintrayRepo("lightbend", "commercial-releases")
       )
     )
   ).aggregate(`cluster-sharding`, `cluster-sharding-couchbase`)
