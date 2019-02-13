@@ -65,7 +65,6 @@ lazy val root = (project in file("."))
         ),
         credentials += Credentials(Path.userHome / ".lightbend" / "commercial.credentials"),
         resolvers += Resolver.bintrayRepo("akka", "maven"),
-        resolvers += Resolver.sonatypeRepo("comtypesafe-2324"),
         resolvers += Resolver.bintrayRepo("lightbend", "commercial-releases")
       )
     )

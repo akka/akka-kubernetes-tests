@@ -9,8 +9,9 @@ import scala.concurrent.duration._
 
 object PingPong {
   case class Ping(sendTime: Long = System.nanoTime())
-  case class Pong(clientSendTime: Long, serverReceiveTime: Long = System.nanoTime())
-  class Summary(clientSendTime: Long, serverReceiveTime: Long, clientReceiveTime: Long = System.nanoTime()) {
+  case class Pong(clientSendTime: Long)
+  // make sure these are recorded on the same JVM
+  class Summary(clientSendTime: Long, clientReceiveTime: Long = System.nanoTime()) {
     val roundTripTime = clientReceiveTime - clientSendTime
     override def toString = s"Summary(${roundTripTime.nanos.pretty})"
   }
@@ -63,10 +64,10 @@ class ClientActor extends Actor with Timers with ActorLogging {
   }
 
   def awaitingResponses(paths: Set[ActorPath]): Receive = {
-    case Pong(clientSendTime, serverReceiveTime) =>
+    case Pong(clientSendTime) =>
       require(paths.contains(sender().path), s"Got response from ${sender()} when expecting responses from ${paths}")
       val remainingPaths = paths - sender().path
-      log.info("Pong received: {}", new Summary(clientSendTime, serverReceiveTime))
+      log.info("Pong received: {}", new Summary(clientSendTime))
       if (remainingPaths.isEmpty) {
         log.info("All responses received. Starting again in 10s")
         timers.startSingleTimer(TickKey, Tick, 10.seconds)
