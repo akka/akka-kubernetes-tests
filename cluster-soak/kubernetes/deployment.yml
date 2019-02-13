@@ -1,0 +1,94 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: cluster-soak
+  name: cluster-soak
+  namespace: akka-long-running
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+     app: cluster-soak
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: cluster-soak
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9001'
+    spec:
+      containers:
+      - name: akka
+        image: docker-registry-default.centralpark.lightbend.com/akka-long-running/cluster-soak
+        ports:
+        - name: remoting
+          containerPort: 2552
+          protocol: TCP
+        - name: management
+          containerPort: 8558
+          protocol: TCP
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: prom-metrics
+          containerPort: 9001
+        env:
+        - name: VERSION
+          value: latest
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: management
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: management
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cluster-soak
+  name: cluster-soak
+  namespace: akka-long-running
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: cluster-soak
+  type: ClusterIP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: cluster-soak
+  name: cluster-soak
+  namespace: akka-long-running
+spec:
+  host: cluster-soak-tests.centralpark.lightbend.com
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Allow
+    termination: edge
+  to:
+    kind: Service
+    name: cluster-soak
+    weight: 100
+  wildcardPolicy: None
+status:
+  ingress:
+  - conditions:
+    host: cluster-soak-tests.centralpark.lightbend.com
+    routerName: router
+    wildcardPolicy: None

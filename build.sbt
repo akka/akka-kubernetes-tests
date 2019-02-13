@@ -14,13 +14,18 @@ val commonDockerSettings = Seq(
   dockerExposedPorts := Seq(8080, 8558, 2552),
   dockerBaseImage := "openjdk:8-jre-alpine",
   dockerRepository := Some("docker-registry-default.centralpark.lightbend.com"),
-  dockerUsername := Some("akka-kubernetes-tests"),
   dockerCommands ++= Seq(
     Cmd("USER", "root"),
     Cmd("RUN", "/sbin/apk", "add", "--no-cache", "bash", "bind-tools", "busybox-extras", "curl", "iptables"),
     Cmd("RUN", "chgrp -R 0 . && chmod -R g=u .")
   ),
   dockerUpdateLatest := true,
+)
+
+val commonCinnamonSettings = Seq(
+  cinnamon in run := true,
+  cinnamon in test := true,
+  cinnamonLogLevel := "INFO"
 )
 
 
@@ -59,38 +64,68 @@ lazy val root = (project in file("."))
           )
         ),
         credentials += Credentials(Path.userHome / ".lightbend" / "commercial.credentials"),
-          resolvers += Resolver.bintrayRepo("akka", "maven"),
+        resolvers += Resolver.bintrayRepo("akka", "maven"),
+        resolvers += Resolver.sonatypeRepo("comtypesafe-2324"),
         resolvers += Resolver.bintrayRepo("lightbend", "commercial-releases")
       )
     )
   ).aggregate(`cluster-sharding`, `cluster-sharding-couchbase`)
 
 lazy val `cluster-sharding` = (project in file("cluster-sharding"))
-  .enablePlugins(JavaServerAppPackaging)
+  .enablePlugins(JavaServerAppPackaging, Cinnamon)
   .configs(IntegrationTest)
   .settings(
     name := "akka-kubernetes",
+    dockerUsername := Some("akka-kubernetes-tests"),
     libraryDependencies ++= ServiceDeps,
+    commonCinnamonSettings
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
 
 lazy val `cluster-sharding-couchbase` = (project in file("cluster-sharding-couchbase"))
-  .enablePlugins(JavaServerAppPackaging)
+  .enablePlugins(JavaServerAppPackaging, Cinnamon)
   .configs(IntegrationTest)
   .settings(
     name := "akka-kubernetes-couchbase",
+    dockerUsername := Some("akka-couchbase"),
     libraryDependencies ++= CouchbaseDeps,
+    commonCinnamonSettings
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
 
 lazy val `chaos-cluster` = (project in file("chaos-cluster"))
-  .enablePlugins(JavaServerAppPackaging)
+  .enablePlugins(JavaServerAppPackaging, Cinnamon)
   .configs(IntegrationTest)
   .settings(
     name := "chaos-cluster",
+    dockerUsername := Some("akka-kubernetes-tests"),
     libraryDependencies ++= ServiceDeps,
+    commonCinnamonSettings
+  )
+  .settings(commonItTestSettings)
+  .settings(commonDockerSettings)
+
+lazy val `cluster-soak` = (project in file("cluster-soak"))
+  .enablePlugins(JavaServerAppPackaging, Cinnamon)
+  .configs(IntegrationTest)
+  .settings(
+    dockerUsername := Some("akka-long-running"),
+    name := "cluster-soak",
+    libraryDependencies ++= ServiceDeps,
+    commonCinnamonSettings
+  )
+  .settings(commonItTestSettings)
+  .settings(commonDockerSettings)
+
+lazy val `cluster-soak-tests` = (project in file("cluster-soak-tests"))
+  .enablePlugins(JavaServerAppPackaging)
+  .configs(IntegrationTest)
+  .settings(
+    dockerUsername := Some("akka-long-running"),
+    name := "cluster-soak-tests",
+    libraryDependencies ++= ClusterSoakTestDeps
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)

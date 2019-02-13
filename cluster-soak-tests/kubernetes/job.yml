@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cluster-soak-tests
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+        - name: soak
+          image: docker-registry-default.centralpark.lightbend.com/akka-long-running/cluster-soak-tests:latest
+      restartPolicy: Never
