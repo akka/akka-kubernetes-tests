@@ -1,7 +1,7 @@
 package akka.kubernetes.soak
-import akka.actor.{Actor, ActorLogging, ActorPath, ActorSelection, Props, RootActorPath, Timers}
+import akka.actor.{Actor, ActorLogging, ActorPath, Address, Props, RootActorPath, Timers}
 import akka.cluster.{Cluster, MemberStatus}
-import akka.kubernetes.soak.ClientActor.{ResponseTimeout, ResponseTimeoutKey, Tick, TickKey}
+import akka.kubernetes.soak.ClientActor._
 import akka.kubernetes.soak.PingPong.{Ping, Pong, Summary}
 import akka.util.PrettyDuration._
 
@@ -39,7 +39,9 @@ class ClientActor extends Actor with Timers with ActorLogging {
 
   val cluster = Cluster(context.system)
 
-  timers.startSingleTimer(TickKey, Tick, 10.seconds)
+  val testInterval = 20.seconds
+
+  timers.startSingleTimer(TickKey, Tick, testInterval)
 
   override def receive: Receive = idle
 
@@ -47,14 +49,14 @@ class ClientActor extends Actor with Timers with ActorLogging {
     case Tick =>
       val members =
         cluster.state.members.filter(_.status == MemberStatus.Up).filter(_.uniqueAddress != cluster.selfUniqueAddress)
-      log.info("Current Up members: {} from {}", members, cluster.state.members.size - 1) // -1 for self member
+      log.debug("Current Up members: {} from {}", members, cluster.state.members.size - 1) // -1 for self member
       if (members.nonEmpty) {
         val paths: Set[ActorPath] = members.map(m => {
           RootActorPath(m.address) / "user" / "server"
         })
-        log.info("Sending to paths {}", paths)
+        log.debug("Sending to paths {}", paths)
         paths.foreach(p => context.actorSelection(p).tell(Ping(), self))
-        context.become(awaitingResponses(paths))
+        context.become(awaitingResponses(paths, Nil))
         timers.startSingleTimer(ResponseTimeoutKey, ResponseTimeout, 10.seconds)
       } else {
         log.info("No other members in the cluster yet")
@@ -63,21 +65,32 @@ class ClientActor extends Actor with Timers with ActorLogging {
 
   }
 
-  def awaitingResponses(paths: Set[ActorPath]): Receive = {
+  def awaitingResponses(paths: Set[ActorPath], responses: List[(Address, Summary)]): Receive = {
     case Pong(clientSendTime) =>
-      require(paths.contains(sender().path), s"Got response from ${sender()} when expecting responses from ${paths}")
-      val remainingPaths = paths - sender().path
-      log.info("Pong received: {}", new Summary(clientSendTime))
+      require(paths.contains(sender().path), s"Got response from ${sender()} when expecting responses from $paths")
+      val path = sender().path
+      val remainingPaths = paths - path
+      val summary = new Summary(clientSendTime)
+      log.debug("Pong received: {}", summary)
+      val updatedResponses = (path.address, summary) :: responses
       if (remainingPaths.isEmpty) {
-        log.info("All responses received. Starting again in 10s")
-        timers.startSingleTimer(TickKey, Tick, 10.seconds)
+        reportResult(updatedResponses, Set.empty)
+        timers.startSingleTimer(TickKey, Tick, testInterval)
         context.become(idle)
       } else {
-        context.become(awaitingResponses(remainingPaths))
+        context.become(awaitingResponses(remainingPaths, updatedResponses))
       }
     case ResponseTimeout =>
-      log.warning("Did not receive responses from {}. Will start again in 10s", paths)
-      timers.startSingleTimer(TickKey, Tick, 10.seconds)
+      reportResult(responses, paths)
+      timers.startSingleTimer(TickKey, Tick, testInterval)
       context.become(idle)
   }
+
+  def reportResult(responses: List[(Address, Summary)], missing: Set[ActorPath]): Unit =
+    if (missing.isEmpty) {
+      log.info("All responses received. Result: {}", responses)
+    } else {
+      log.warning("Did not receive responses from {}.  Received responses from {}", responses, missing)
+    }
+
 }

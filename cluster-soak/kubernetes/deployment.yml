@@ -45,6 +45,7 @@ spec:
           httpGet:
             path: /ready
             port: management
+          initialDelaySeconds: 5 # should be at least contact-point-discovery.stable-margin
         livenessProbe:
           httpGet:
             path: /alive
