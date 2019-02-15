@@ -47,6 +47,7 @@ object Dependencies {
   val ClusterSoakTestDeps = Seq(
     AkkaClusterHttp,
     AkkaDiscovery,
+    AkkaServiceDiscoveryK8Api,
     Diagnostics,
     Logback,
     ScalaTestProd

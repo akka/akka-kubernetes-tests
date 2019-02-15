@@ -119,6 +119,7 @@ lazy val `cluster-soak` = (project in file("cluster-soak"))
   .settings(commonDockerSettings)
 
 lazy val `cluster-soak-tests` = (project in file("cluster-soak-tests"))
+  .dependsOn(`cluster-soak`)
   .enablePlugins(JavaServerAppPackaging)
   .configs(IntegrationTest)
   .settings(
