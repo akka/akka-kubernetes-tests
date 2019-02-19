@@ -77,8 +77,13 @@ class ClusterSoakSpec(endpoints: Resolved)(implicit system: ActorSystem)
         responses.filter(_.lastResult.responses.exists(_._2.nanos > 2.seconds)) shouldEqual Nil
       }
 
-      responses.filter(_.memberUnreachableEvents != 0) shouldEqual Nil
-      responses.filter(_.memberDownedEvents != 0) shouldEqual Nil
+      withClue("Found unreachable events") {
+        responses.filter(_.memberUnreachableEvents != 0) shouldEqual Nil
+      }
+
+      withClue("Found downed events") {
+        responses.filter(_.memberDownedEvents != 0) shouldEqual Nil
+      }
     }
   }
 
