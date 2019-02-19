@@ -36,6 +36,8 @@ val commonItTestSettings = Seq(
     .toSeq,
 ) ++ Defaults.itSettings
 
+
+
 lazy val root = (project in file("."))
   .configs(IntegrationTest)
   .settings(
@@ -70,6 +72,8 @@ lazy val root = (project in file("."))
     )
   ).aggregate(`cluster-sharding`, `cluster-sharding-couchbase`)
 
+lazy val common = project in file("common")
+
 lazy val `cluster-sharding` = (project in file("cluster-sharding"))
   .enablePlugins(JavaServerAppPackaging, Cinnamon)
   .configs(IntegrationTest)
@@ -81,6 +85,7 @@ lazy val `cluster-sharding` = (project in file("cluster-sharding"))
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
+  .dependsOn(common)
 
 lazy val `cluster-sharding-couchbase` = (project in file("cluster-sharding-couchbase"))
   .enablePlugins(JavaServerAppPackaging, Cinnamon)
@@ -93,6 +98,7 @@ lazy val `cluster-sharding-couchbase` = (project in file("cluster-sharding-couch
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
+  .dependsOn(common)
 
 lazy val `chaos-cluster` = (project in file("chaos-cluster"))
   .enablePlugins(JavaServerAppPackaging, Cinnamon)
@@ -105,6 +111,7 @@ lazy val `chaos-cluster` = (project in file("chaos-cluster"))
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
+  .dependsOn(common)
 
 lazy val `cluster-soak` = (project in file("cluster-soak"))
   .enablePlugins(JavaServerAppPackaging, Cinnamon)
@@ -117,6 +124,7 @@ lazy val `cluster-soak` = (project in file("cluster-soak"))
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
+  .dependsOn(common)
 
 lazy val `cluster-soak-tests` = (project in file("cluster-soak-tests"))
   .dependsOn(`cluster-soak`)
@@ -129,4 +137,5 @@ lazy val `cluster-soak-tests` = (project in file("cluster-soak-tests"))
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
+  .dependsOn(common)
 
