@@ -4,11 +4,11 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <target>System.out</target>
         <encoder>
-            <pattern>%date{MM/dd HH:mm:ss} %-5level[%thread] %logger{1} - %m%n%xException</pattern>
+            <pattern>[%X{akkaTimestamp}] %-5level[%X{sourceThread}] [%X{akkaSource}] - %m%n</pattern>
         </encoder>
     </appender>
 
-    <root level="${LOG_LEVEL:-INFO}">
+    <root level="${LOG_LEVEL:-WARN}">
         <appender-ref ref="CONSOLE"/>
     </root>
 

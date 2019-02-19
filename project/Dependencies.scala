@@ -1,11 +1,12 @@
+import com.lightbend.cinnamon.sbt.Cinnamon
 import sbt._
 
 object Dependencies {
 
-  val AkkaVersion = "2.5.20"
+  val AkkaVersion = "2.5.21"
   val AkkaManagementVersion = "1.0.0-RC2"
   val AkkaPersistenceCouchbaseVersion = "1.0-RC2"
-  val SplitBrainResolverVersion = "1.1.7+27-745cd37d"
+  val CommercialVersion = "1.1.7+27-745cd37d"
 
   val AkkaCluster = "com.typesafe.akka" %% "akka-cluster" % AkkaVersion
   val AkkaDiscovery = "com.typesafe.akka" %% "akka-discovery" % AkkaVersion
@@ -19,22 +20,38 @@ object Dependencies {
 
   val AkkaPersistenceCouchbase = "com.lightbend.akka" %% "akka-persistence-couchbase" % AkkaPersistenceCouchbaseVersion
 
-  val SplitBrainResolver = "com.lightbend.akka" %% "akka-split-brain-resolver" % SplitBrainResolverVersion
-  val KubernetesLease = "com.lightbend.akka" %% "akka-lease-kubernetes" % SplitBrainResolverVersion
+  val SplitBrainResolver = "com.lightbend.akka" %% "akka-split-brain-resolver" % CommercialVersion
+  val KubernetesLease = "com.lightbend.akka" %% "akka-lease-kubernetes" % CommercialVersion
+  val Diagnostics = "com.lightbend.akka" %% "akka-diagnostics" % CommercialVersion
 
   val Logback = "ch.qos.logback" % "logback-classic" % "1.2.3"
 
-  val ScalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % "it,test"
+  val ScalaTestProd = "org.scalatest" %% "scalatest" % "3.0.5"
+  val ScalaTest = ScalaTestProd % "it,test"
 
   val ServiceDeps = Seq(
     AkkaBootstrap, AkkaServiceDiscoveryK8Api, AkkaClusterHttp, AkkaDiscovery,
     AkkaCluster, AkkaClusterSharding, AkkaClusterTools, AkkaSlj4j,
     SplitBrainResolver,
     KubernetesLease,
+    Diagnostics,
+    Cinnamon.library.cinnamonAkka,
+    Cinnamon.library.cinnamonAkkaHttp,
+    Cinnamon.library.cinnamonAkkaStream,
+    Cinnamon.library.cinnamonPrometheus,
+    Cinnamon.library.cinnamonPrometheusHttpServer,
     Logback,
     ScalaTest
   )
 
+  val ClusterSoakTestDeps = Seq(
+    AkkaClusterHttp,
+    AkkaDiscovery,
+    AkkaServiceDiscoveryK8Api,
+    Diagnostics,
+    Logback,
+    ScalaTestProd
+  )
   val CouchbaseDeps = ServiceDeps ++ Seq(
     AkkaPersistenceCouchbase
   )
