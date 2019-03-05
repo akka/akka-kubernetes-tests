@@ -3,6 +3,8 @@ import com.typesafe.sbt.packager.docker._
 
 // To be compatible with Docker tags
 version in ThisBuild ~= (_.replace('+', '-'))
+// use for local testing
+//version in ThisBuild := "1.3.3.7"
 scalaVersion in ThisBuild := "2.12.8"
 
 val commonDockerSettings = Seq(
@@ -13,7 +15,8 @@ val commonDockerSettings = Seq(
     },
   dockerExposedPorts := Seq(8080, 8558, 2552),
   dockerBaseImage := "openjdk:8-jre-alpine",
-  dockerRepository := Some("docker-registry-default.centralpark.lightbend.com"),
+  dockerUpdateLatest := true,
+//  dockerRepository := Some("docker-registry-default.centralpark2.lightbend.com"),
   dockerCommands ++= Seq(
     Cmd("USER", "root"),
     Cmd("RUN", "/sbin/apk", "add", "--no-cache", "bash", "bind-tools", "busybox-extras", "curl", "iptables"),
@@ -117,7 +120,7 @@ lazy val `cluster-soak` = (project in file("cluster-soak"))
   .enablePlugins(JavaServerAppPackaging, Cinnamon)
   .configs(IntegrationTest)
   .settings(
-    dockerUsername := Some("akka-long-running"),
+    dockerUsername := Some("kubakka"),
     name := "cluster-soak",
     libraryDependencies ++= ServiceDeps,
     commonCinnamonSettings
@@ -131,7 +134,7 @@ lazy val `cluster-soak-tests` = (project in file("cluster-soak-tests"))
   .enablePlugins(JavaServerAppPackaging)
   .configs(IntegrationTest)
   .settings(
-    dockerUsername := Some("akka-long-running"),
+    dockerUsername := Some("kubakka"),
     name := "cluster-soak-tests",
     libraryDependencies ++= ClusterSoakTestDeps
   )
