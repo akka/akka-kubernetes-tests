@@ -16,10 +16,11 @@ val commonDockerSettings = Seq(
   dockerExposedPorts := Seq(8080, 8558, 2552),
   dockerBaseImage := "openjdk:8-jre-alpine",
   dockerUpdateLatest := true,
-//  dockerRepository := Some("docker-registry-default.centralpark2.lightbend.com"),
+  dockerRepository := Some("docker-registry-default.centralpark2.lightbend.com"),
   dockerCommands ++= Seq(
     Cmd("USER", "root"),
     Cmd("RUN", "/sbin/apk", "add", "--no-cache", "bash", "bind-tools", "busybox-extras", "curl", "iptables"),
+    Cmd("RUN", "/sbin/apk", "add", "--no-cache", "jattach", "--repository", "http://dl-cdn.alpinelinux.org/alpine/edge/community/"),
     Cmd("RUN", "chgrp -R 0 . && chmod -R g=u .")
   ),
   dockerUpdateLatest := true,
@@ -120,7 +121,8 @@ lazy val `cluster-soak` = (project in file("cluster-soak"))
   .enablePlugins(JavaServerAppPackaging, Cinnamon)
   .configs(IntegrationTest)
   .settings(
-    dockerUsername := Some("kubakka"),
+//    dockerUsername := Some("kubakka"),
+    dockerUsername := Some("akka-long-running"),
     name := "cluster-soak",
     libraryDependencies ++= ServiceDeps,
     commonCinnamonSettings
@@ -134,7 +136,8 @@ lazy val `cluster-soak-tests` = (project in file("cluster-soak-tests"))
   .enablePlugins(JavaServerAppPackaging)
   .configs(IntegrationTest)
   .settings(
-    dockerUsername := Some("kubakka"),
+    //dockerUsername := Some("kubakka"),
+    dockerUsername := Some("akka-long-running"),
     name := "cluster-soak-tests",
     libraryDependencies ++= ClusterSoakTestDeps
   )

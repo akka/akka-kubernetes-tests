@@ -14,7 +14,7 @@ import scala.util.{Failure, Success}
 // collect your json format instances into a support trait:
 trait StatsJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val testResultFormat = jsonFormat2(TestResult)
-  implicit val testResultsFormat = jsonFormat6(TestResults)
+  implicit val testResultsFormat = jsonFormat7(TestResults)
 }
 
 class StatsEndpoint(system: ActorSystem, client: ActorRef) extends Directives with StatsJsonSupport {

@@ -19,7 +19,7 @@ object PingPong {
   }
 
   def serverProps() = Props(new ServerActor())
-  def clientProps() = Props(new ClientActor())
+  def clientProps(joiningTime: FiniteDuration) = Props(new ClientActor(joiningTime))
 
 }
 
@@ -50,9 +50,10 @@ case class TestResults(testsRun: Long,
                        lastResult: TestResult,
                        recentFailures: List[TestResult],
                        memberDownedEvents: Long,
-                       memberUnreachableEvents: Long)
+                       memberUnreachableEvents: Long,
+                       joiningTime: Long)
 
-class ClientActor extends Actor with Timers with ActorLogging {
+class ClientActor(joiningTime: FiniteDuration) extends Actor with Timers with ActorLogging {
 
   val cluster = Cluster(context.system)
 
@@ -126,7 +127,8 @@ class ClientActor extends Actor with Timers with ActorLogging {
                              lastTestResult,
                              failedTests.toList.filter(_ != null),
                              memberDownedEvents,
-                             memberUnreachableEvents)
+                             memberUnreachableEvents,
+                             joiningTime.toNanos)
       if (reset) {
         log.info("Resetting all stats")
         lastTestResult = TestResult(Set.empty, Nil)

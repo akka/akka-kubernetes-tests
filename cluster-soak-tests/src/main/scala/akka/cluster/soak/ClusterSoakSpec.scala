@@ -53,6 +53,13 @@ class ClusterSoakSpec(endpoints: Resolved)(implicit system: ActorSystem)
         .runWith(Sink.seq)
         .futureValue
 
+      log.info("{} nodes tested", responses.size)
+
+      val maxJoinTimes =
+        responses.map(_.joiningTime).sorted.reverse.take(5).map(_.nanos.pretty)
+
+      log.info("Max join times: {}", maxJoinTimes)
+
       val maxResponseTimePerNode: immutable.Seq[(Target, ResponseTimeNanos)] =
         responses.map(_.lastResult.responses.maxBy(_._2))
 
