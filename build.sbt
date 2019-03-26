@@ -126,8 +126,11 @@ lazy val `cluster-soak` = (project in file("cluster-soak"))
 //    dockerUsername := Some("kubakka"),
     dockerUsername := Some("akka-long-running"),
     name := "cluster-soak",
-    libraryDependencies ++= ServiceDeps
+    libraryDependencies ++= ServiceDeps,
 //    commonCinnamonSettings
+    javaOptions in Universal ++= Seq(
+      "-J-Xlog:gc*=debug" // java 9 + verbose gc logging
+    )
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
