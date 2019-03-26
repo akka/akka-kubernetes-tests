@@ -1,4 +1,4 @@
-import com.lightbend.cinnamon.sbt.Cinnamon
+//import com.lightbend.cinnamon.sbt.Cinnamon
 import sbt._
 
 object Dependencies {
@@ -35,11 +35,11 @@ object Dependencies {
     SplitBrainResolver,
     KubernetesLease,
     Diagnostics,
-    Cinnamon.library.cinnamonAkka,
-    Cinnamon.library.cinnamonAkkaHttp,
-    Cinnamon.library.cinnamonAkkaStream,
-    Cinnamon.library.cinnamonPrometheus,
-    Cinnamon.library.cinnamonPrometheusHttpServer,
+//    Cinnamon.library.cinnamonAkka,
+//    Cinnamon.library.cinnamonAkkaHttp,
+//    Cinnamon.library.cinnamonAkkaStream,
+//    Cinnamon.library.cinnamonPrometheus,
+//    Cinnamon.library.cinnamonPrometheusHttpServer,
     Logback,
     ScalaTest
   )

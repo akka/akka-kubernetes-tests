@@ -14,7 +14,8 @@ val commonDockerSettings = Seq(
       case v => Seq(v)
     },
   dockerExposedPorts := Seq(8080, 8558, 2552),
-  dockerBaseImage := "openjdk:8-jre-alpine",
+//  dockerBaseImage := "openjdk:11-alpine",
+  dockerBaseImage := "adoptopenjdk/openjdk11:alpine",
   dockerUpdateLatest := true,
   dockerRepository := Some("docker-registry-default.centralpark2.lightbend.com"),
   dockerCommands ++= Seq(
@@ -118,14 +119,15 @@ lazy val `chaos-cluster` = (project in file("chaos-cluster"))
   .dependsOn(common)
 
 lazy val `cluster-soak` = (project in file("cluster-soak"))
-  .enablePlugins(JavaServerAppPackaging, Cinnamon)
+  .enablePlugins(JavaServerAppPackaging)
+//  .enablePlugins(Cinnamon)
   .configs(IntegrationTest)
   .settings(
 //    dockerUsername := Some("kubakka"),
     dockerUsername := Some("akka-long-running"),
     name := "cluster-soak",
-    libraryDependencies ++= ServiceDeps,
-    commonCinnamonSettings
+    libraryDependencies ++= ServiceDeps
+//    commonCinnamonSettings
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)

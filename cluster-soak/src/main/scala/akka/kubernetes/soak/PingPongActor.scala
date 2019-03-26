@@ -42,16 +42,23 @@ object Tests {
   type ResponseTimeNanos = Long
 }
 
-case class TestResult(notResponded: Set[Target], responses: List[(Target, ResponseTimeNanos)])
+case class TestResult(notResponded: Set[Target], responses: List[(Target, ResponseTimeNanos)]) {
+  override def toString: Target = s"TestResult(notResponded: $notResponded)"
+}
 
 case class GetTestResults(resetFailures: Boolean = true)
+
 case class TestResults(testsRun: Long,
                        testsFailed: Long,
                        lastResult: TestResult,
                        recentFailures: List[TestResult],
                        memberDownedEvents: Long,
                        memberUnreachableEvents: Long,
-                       joiningTime: Long)
+                       joiningTime: Long) {
+
+  override def toString =
+    s"TestResults(testsRun: $testsRun, testsFailed: $testsFailed, lastResult: $lastResult, recentFailed: $recentFailures, downed: $memberDownedEvents, unreachable: $memberUnreachableEvents, joiningTime: $joiningTime)"
+}
 
 class ClientActor(joiningTime: FiniteDuration) extends Actor with Timers with ActorLogging {
 
@@ -157,7 +164,7 @@ class ClientActor(joiningTime: FiniteDuration) extends Actor with Timers with Ac
       log.info("All responses received. Result: {}", responses)
     } else {
       testsFailed += 1
-      log.warning("Did not receive responses from {}.  Received responses from {}", responses, missing)
+      log.warning("Did not receive responses from {}.  Received responses from {}", missing, responses)
     }
   }
 

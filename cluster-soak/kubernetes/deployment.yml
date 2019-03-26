@@ -6,7 +6,7 @@ metadata:
   name: cluster-soak
   namespace: akka-long-running
 spec:
-  replicas: 25
+  replicas: 3
   selector:
     matchLabels:
      app: cluster-soak
@@ -46,12 +46,12 @@ spec:
         - name: VERSION
           value: latest
         - name: LOG_LEVEL
-          value: INFO
+          value: DEBUG
         readinessProbe:
           httpGet:
             path: /ready
             port: management
-          initialDelaySeconds: 5 # should be at least contact-point-discovery.stable-margin
+          initialDelaySeconds: 10 # should be at least contact-point-discovery.stable-margin
         livenessProbe:
           httpGet:
             path: /alive
@@ -59,9 +59,15 @@ spec:
         resources:
           requests:
             memory: "512Mi"
-            cpu: "1000m"
+            cpu: "1001m" # stupid JVM sets cores to the host resources if this is 1000m which is 1024 shares. This will result in scheduling based on 1001 but the JVM will see 2 cores
           limits:
             memory: "2048Mi"
+        volumeMounts:
+         - name: heap-dumps
+           mountPath: /dumps
+      volumes:
+        - name: heap-dumps
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
