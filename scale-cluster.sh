@@ -1,4 +1,4 @@
-to_size=250
+to_size=200
 
 
 # TODO deal with 0 pods
