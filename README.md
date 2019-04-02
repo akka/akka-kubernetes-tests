@@ -27,6 +27,21 @@ See [Cluster soak testing](cluster-soak/README.md)
 The [`cluster-sharding-couchbase`](cluster-sharding-couchbase/README.md) has an application that tests Akka Persistence Couchbase. This is
 not run as part of CI.
 
+## Useful commands
+
+Get member status from one node, replace pod name, required `jq`:
+
+```
+oc exec -it cluster-soak-6f4fcf5ff8-f7jc4 curl localhost:8558/cluster/members | jq .unreachable
+
+```
+
+Get pod name from ip
+
+```
+oc get  --output json  pods | jq '.items[] | select(.status.podIP=="10.131.20.160")' | jq .metadata.name
+```
+
 
 
 
