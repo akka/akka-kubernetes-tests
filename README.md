@@ -42,6 +42,12 @@ Get pod name from ip
 oc get  --output json  pods | jq '.items[] | select(.status.podIP=="10.131.20.160")' | jq .metadata.name
 ```
 
+Number of members:
+
+```
+oc exec -it cluster-soak-5d9ddb8664-zr22b curl localhost:8558/cluster/members | jq '.members | length'
+```
+
 
 
 
