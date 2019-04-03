@@ -14,10 +14,10 @@ val commonDockerSettings = Seq(
       case v => Seq(v)
     },
   dockerExposedPorts := Seq(8080, 8558, 2552),
-//  dockerBaseImage := "openjdk:11-alpine",
-  dockerBaseImage := "adoptopenjdk/openjdk11:alpine",
+  dockerBaseImage := "openjdk:8-jre-alpine",
   dockerUpdateLatest := true,
-  dockerRepository := Some("docker-registry-default.centralpark2.lightbend.com"),
+  dockerRepository := Some("docker-registry-default.centralpark.lightbend.com"),
+//  dockerRepository := Some("docker-registry-default.centralpark2.lightbend.com"), // this is the bigger cluster
   dockerCommands ++= Seq(
     Cmd("USER", "root"),
     Cmd("RUN", "/sbin/apk", "add", "--no-cache", "bash", "bind-tools", "busybox-extras", "curl", "iptables"),
@@ -120,14 +120,14 @@ lazy val `chaos-cluster` = (project in file("chaos-cluster"))
 
 lazy val `cluster-soak` = (project in file("cluster-soak"))
   .enablePlugins(JavaServerAppPackaging)
-//  .enablePlugins(Cinnamon)
+  .enablePlugins(Cinnamon)
   .configs(IntegrationTest)
   .settings(
 //    dockerUsername := Some("kubakka"),
     dockerUsername := Some("akka-long-running"),
     name := "cluster-soak",
     libraryDependencies ++= ServiceDeps,
-//    commonCinnamonSettings
+    commonCinnamonSettings,
     javaOptions in Universal ++= Seq(
       "-J-Xlog:gc*=debug" // java 9 + verbose gc logging
     )
