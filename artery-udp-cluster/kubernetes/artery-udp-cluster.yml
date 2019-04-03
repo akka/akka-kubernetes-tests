@@ -1,0 +1,99 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: artery-udp-cluster
+  name: artery-udp-cluster
+  namespace: akka-artery-udp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+     app: artery-udp-cluster
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+
+  template:
+    metadata:
+      labels:
+        app: artery-udp-cluster
+    spec:
+      containers:
+      - name: artery-udp-cluster
+        image: docker-registry-default.centralpark.lightbend.com/akka-artery-udp/artery-udp-cluster
+        ports:
+        - name: remoting
+          containerPort: 2552
+          protocol: TCP
+        - name: management
+          containerPort: 8558
+          protocol: TCP
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        env:
+        - name: VERSION
+          value: latest
+        - name: LOG_LEVEL
+          value: DEBUG
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: management
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: management
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: media-driver
+      volumes:
+      - name: media-driver
+        emptyDir:
+          medium: Memory
+          name: media-driver
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-reader
+  namespace: akka-artery-udp
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+  namespace: akka-artery-udp
+subjects:
+- kind: User
+  name: system:serviceaccount:akka-artery-udp:default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: artery-udp-cluster
+  name: artery-udp-cluster
+  namespace: akka-artery-udp
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: akka-kubernetes
+  type: ClusterIP
+

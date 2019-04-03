@@ -3,7 +3,7 @@ import sbt._
 
 object Dependencies {
 
-  val AkkaVersion = "2.5.21"
+  val AkkaVersion = "2.5.22"
   val AkkaManagementVersion = "1.0.0-RC2"
   val AkkaPersistenceCouchbaseVersion = "1.0-RC2"
   val CommercialVersion = "1.1.7+27-745cd37d"
