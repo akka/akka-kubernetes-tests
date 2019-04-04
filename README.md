@@ -29,7 +29,7 @@ not run as part of CI.
 
 ## Useful commands
 
-Get member status from one node, replace pod name, required `jq`:
+Get member status from one node, replace pod name, requires `jq`:
 
 ```
 oc exec -it cluster-soak-6f4fcf5ff8-f7jc4 curl localhost:8558/cluster/members | jq .unreachable
