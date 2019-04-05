@@ -28,7 +28,11 @@ object ClusterSoakMain extends App {
   val resolveTimeout = 5.seconds
 
   val dnsDispatcher = system.dispatchers.lookup("dns-dispatcher")
-  StarvationDetector.checkExecutionContext(dnsDispatcher, system.log, StarvationDetectorSettings(1.second, 5.seconds, 100.millis, 10.seconds), () => false)
+  StarvationDetector.checkExecutionContext(dnsDispatcher, system.log, StarvationDetectorSettings(
+    checkInterval = 1.second,
+    initialDelay = 5.seconds,
+    maxDelayWarningThreshold = 100.millis,
+    warningInterval = 10.seconds), () => false)
 
   @volatile var failed = false
   val testResult = for {

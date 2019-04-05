@@ -1,12 +1,13 @@
 //import com.lightbend.cinnamon.sbt.Cinnamon
+import com.lightbend.cinnamon.sbt.Cinnamon
 import sbt._
 
 object Dependencies {
 
-  val AkkaVersion = "2.5.21"
+  val AkkaVersion = "2.5.22"
   val AkkaManagementVersion = "1.0.0-RC2"
   val AkkaPersistenceCouchbaseVersion = "1.0-RC2"
-  val CommercialVersion = "1.1.8"
+  val CommercialVersion = "1.1.9"
   val AlpakkaVersion = "1.0-RC1"
 
   val AkkaCluster = "com.typesafe.akka" %% "akka-cluster" % AkkaVersion
@@ -38,11 +39,11 @@ object Dependencies {
     KubernetesLease,
     Diagnostics,
     AlpakkaFiles % "test",
-//    Cinnamon.library.cinnamonAkka,
-//    Cinnamon.library.cinnamonAkkaHttp,
-//    Cinnamon.library.cinnamonAkkaStream,
-//    Cinnamon.library.cinnamonPrometheus,
-//    Cinnamon.library.cinnamonPrometheusHttpServer,
+    Cinnamon.library.cinnamonAkka,
+    Cinnamon.library.cinnamonAkkaHttp,
+    Cinnamon.library.cinnamonAkkaStream,
+    Cinnamon.library.cinnamonPrometheus,
+    Cinnamon.library.cinnamonPrometheusHttpServer,
     Logback,
     ScalaTest
   )
