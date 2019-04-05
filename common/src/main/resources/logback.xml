@@ -8,7 +8,7 @@
         </encoder>
     </appender>
 
-    <root level="${LOG_LEVEL:-WARN}">
+    <root level="${LOG_LEVEL:-INFO}">
         <appender-ref ref="CONSOLE"/>
     </root>
 

@@ -1,18 +1,21 @@
+//import com.lightbend.cinnamon.sbt.Cinnamon
 import com.lightbend.cinnamon.sbt.Cinnamon
 import sbt._
 
 object Dependencies {
 
-  val AkkaVersion = "2.5.21"
+  val AkkaVersion = "2.5.22"
   val AkkaManagementVersion = "1.0.0-RC2"
   val AkkaPersistenceCouchbaseVersion = "1.0-RC2"
-  val CommercialVersion = "1.1.7+27-745cd37d"
+  val CommercialVersion = "1.1.9"
+  val AlpakkaVersion = "1.0-RC1"
 
   val AkkaCluster = "com.typesafe.akka" %% "akka-cluster" % AkkaVersion
   val AkkaDiscovery = "com.typesafe.akka" %% "akka-discovery" % AkkaVersion
   val AkkaClusterSharding = "com.typesafe.akka" %% "akka-cluster-sharding" % AkkaVersion
   val AkkaClusterTools = "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion
   val AkkaSlj4j = "com.typesafe.akka" %% "akka-slf4j" % AkkaVersion
+  val AlpakkaFiles = "com.lightbend.akka" %% "akka-stream-alpakka-file" % AlpakkaVersion
 
   val AkkaBootstrap = "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % AkkaManagementVersion
   val AkkaServiceDiscoveryK8Api = "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % AkkaManagementVersion
@@ -35,6 +38,7 @@ object Dependencies {
     SplitBrainResolver,
     KubernetesLease,
     Diagnostics,
+    AlpakkaFiles % "test",
     Cinnamon.library.cinnamonAkka,
     Cinnamon.library.cinnamonAkkaHttp,
     Cinnamon.library.cinnamonAkkaStream,

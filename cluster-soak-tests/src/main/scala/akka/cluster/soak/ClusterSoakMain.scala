@@ -2,7 +2,9 @@ package akka.cluster.soak
 import akka.actor.CoordinatedShutdown.Reason
 import akka.actor.{ActorSystem, CoordinatedShutdown}
 import akka.discovery.{Discovery, Lookup}
+import akka.dispatch.Dispatchers
 import akka.stream.ActorMaterializer
+import com.lightbend.akka.diagnostics.{StarvationDetector, StarvationDetectorSettings}
 import org.scalatest._
 import org.scalatest.events.{Event, TestFailed}
 
@@ -24,6 +26,13 @@ object ClusterSoakMain extends App {
 
   val serviceDiscovery = Discovery(system).discovery
   val resolveTimeout = 5.seconds
+
+  val dnsDispatcher = system.dispatchers.lookup("dns-dispatcher")
+  StarvationDetector.checkExecutionContext(dnsDispatcher, system.log, StarvationDetectorSettings(
+    checkInterval = 1.second,
+    initialDelay = 5.seconds,
+    maxDelayWarningThreshold = 100.millis,
+    warningInterval = 10.seconds), () => false)
 
   @volatile var failed = false
   val testResult = for {

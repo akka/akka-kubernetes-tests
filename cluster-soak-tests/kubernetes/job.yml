@@ -10,5 +10,7 @@ spec:
     spec:
       containers:
         - name: soak
-          image: docker-registry-default.centralpark.lightbend.com/akka-long-running/cluster-soak-tests:latest
+          image: docker-registry-default.centralpark2.lightbend.com/akka-long-running/cluster-soak-tests
+          imagePullPolicy: Always
+#          image: kubakka/cluster-soak-tests:latest
       restartPolicy: Never

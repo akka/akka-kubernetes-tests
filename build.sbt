@@ -3,6 +3,8 @@ import com.typesafe.sbt.packager.docker._
 
 // To be compatible with Docker tags
 version in ThisBuild ~= (_.replace('+', '-'))
+// use for local testing
+//version in ThisBuild := "1.3.3.7"
 scalaVersion in ThisBuild := "2.12.8"
 
 val commonDockerSettings = Seq(
@@ -13,10 +15,13 @@ val commonDockerSettings = Seq(
     },
   dockerExposedPorts := Seq(8080, 8558, 2552),
   dockerBaseImage := "openjdk:8-jre-alpine",
+  dockerUpdateLatest := true,
   dockerRepository := Some("docker-registry-default.centralpark.lightbend.com"),
+//  dockerRepository := Some("docker-registry-default.centralpark2.lightbend.com"), // this is the bigger cluster
   dockerCommands ++= Seq(
     Cmd("USER", "root"),
     Cmd("RUN", "/sbin/apk", "add", "--no-cache", "bash", "bind-tools", "busybox-extras", "curl", "iptables"),
+    Cmd("RUN", "/sbin/apk", "add", "--no-cache", "jattach", "--repository", "http://dl-cdn.alpinelinux.org/alpine/edge/community/"),
     Cmd("RUN", "chgrp -R 0 . && chmod -R g=u .")
   ),
   dockerUpdateLatest := true,
@@ -114,13 +119,18 @@ lazy val `chaos-cluster` = (project in file("chaos-cluster"))
   .dependsOn(common)
 
 lazy val `cluster-soak` = (project in file("cluster-soak"))
-  .enablePlugins(JavaServerAppPackaging, Cinnamon)
+  .enablePlugins(JavaServerAppPackaging)
+  .enablePlugins(Cinnamon)
   .configs(IntegrationTest)
   .settings(
+//    dockerUsername := Some("kubakka"),
     dockerUsername := Some("akka-long-running"),
     name := "cluster-soak",
     libraryDependencies ++= ServiceDeps,
-    commonCinnamonSettings
+    commonCinnamonSettings,
+    javaOptions in Universal ++= Seq(
+      "-J-Xlog:gc*=debug" // java 9 + verbose gc logging
+    )
   )
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
@@ -131,6 +141,7 @@ lazy val `cluster-soak-tests` = (project in file("cluster-soak-tests"))
   .enablePlugins(JavaServerAppPackaging)
   .configs(IntegrationTest)
   .settings(
+    //dockerUsername := Some("kubakka"),
     dockerUsername := Some("akka-long-running"),
     name := "cluster-soak-tests",
     libraryDependencies ++= ClusterSoakTestDeps
