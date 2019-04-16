@@ -75,7 +75,7 @@ lazy val root = (project in file("."))
         resolvers += Resolver.bintrayRepo("lightbend", "commercial-releases")
       )
     )
-  ).aggregate(`cluster-sharding`, `cluster-sharding-couchbase`)
+  ).aggregate(`cluster-sharding`, `cluster-sharding-couchbase`, `artery-udp-cluster`)
 
 lazy val common = project in file("common")
 
@@ -149,4 +149,17 @@ lazy val `cluster-soak-tests` = (project in file("cluster-soak-tests"))
   .settings(commonItTestSettings)
   .settings(commonDockerSettings)
   .dependsOn(common)
+
+
+lazy val `artery-udp-cluster` = (project in file("artery-udp-cluster"))
+  .enablePlugins(JavaServerAppPackaging, Cinnamon)
+  .configs(IntegrationTest)
+  .settings(commonDockerSettings)
+  .dependsOn(common)
+  .settings(
+    dockerUsername := Some("akka-artery-udp"),
+    name := "artery-udp-cluster",
+    libraryDependencies ++= ServiceDeps,
+    commonCinnamonSettings
+  )
 
