@@ -27,7 +27,7 @@ class AkkaBoss(name: String) extends Actor {
     "johan" -> Set("radiation", "streams"),
     "raboof" -> Set("Buy a house", "HTTP"),
     "ktoso" -> Set("Stop fruiting and come home"),
-    "helena" -> Set("Stopped fruiting and came home", "Drink complexi tea")
+    "helena" -> Set("Stopped fruiting and came home", "Drink complexi tea"),
     "chbatey" -> Set("Anything but Cassandra", "Drink coffee")
   )
 
