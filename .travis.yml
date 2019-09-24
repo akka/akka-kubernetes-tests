@@ -43,7 +43,7 @@ stages:
   if: repo = akka/akka-kubernetes-tests
 env:
   global:
-  - TRAVIS_JDK=adopt@1.8.202-08
+  - TRAVIS_JDK=adopt@~1.8.202-08
   - JABBA_HOME=/home/travis/.jabba
   # DOCKER_USERNAME
   - secure: cSrSMOzMvcaDUp686CcP4tG2qPMlGeaVcsBzjN3ERRF8bzC0IWGNGE4xQ6bksF15EwWMOWhn/dlEpA5segPiFuWAV5CCrXNoHlVRJo2VmOrhMVsv8WaA786VLfqabe2dAL5x+ihZLLEBW2R+WGxlEX+RtRDl3iXvpfDbMCUqLSfLi9BLLyvhAQTFYjQLPc36g/rINXWbnCZOyaWtEfSE99zeYxQuAUg+621unnJukSTEkQMMG4+3AHu4ZwMk/Zit7TDkoi02UPCYZ85fr1uszLMpXt9sDc+b4loisUfws2eoHNL6z9R+jEahU412g1Fxn7R/7gG3u5at7cqfFHzerM2/mDLAcwQUdY76lqzZqT7MjI/4Ssy086qYv45ChkasmU/Lxbfk4NhlgbFUdcwRYikghj7oYrsZHvEm/fRZYHmzTRzrH4RWNFBetGaFiycS8F8paabTcee/euIZ8wHXafTRdl7MsG1nQRJ9Oa6egmgv8YzrmyQvTJqAiLt6ZA5NhFWs8IdqHt6Co1l3n7QmpExtkYOhm98UTuHY2lsA05dIOaE83w0TNYmYaqqK0D+LiLhJHX+8s2rVh79kSblz1fbmVqXlb0t2sljffxMbVcHtTTA5AzZhamMAZv35rg8/RvQqYaf5TXFMktzaAw7odoAwYgTun/nYQIU83oFX8LU=
