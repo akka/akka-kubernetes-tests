@@ -7,6 +7,8 @@ version in ThisBuild ~= (_.replace('+', '-'))
 //version in ThisBuild := "1.3.3.7"
 scalaVersion in ThisBuild := "2.12.8"
 
+resolvers += "Akka library repository".at("https://repo.akka.io/maven")
+
 val commonDockerSettings = Seq(
   dockerCommands :=
     dockerCommands.value.flatMap {
